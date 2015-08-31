@@ -42,11 +42,6 @@ ex4Tests = []
 ex5Tests :: [Test]
 ex5Tests = []
 
--- Exercise 6 -----------------------------------------
-
-ex6Tests :: [Test]
-ex6Tests = []
-
 -- All Tests ------------------------------------------
 
 allTests :: [Test]
@@ -55,5 +50,4 @@ allTests = concat [ ex1Tests
                   , ex3Tests
                   , ex4Tests
                   , ex5Tests
-                  , ex6Tests
                   ]

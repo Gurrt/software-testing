@@ -4,23 +4,29 @@ module HW01 where
 -- Exercise 1 -----------------------------------------
 
 -- Get the last digit from a number
+-- Note : casting (last (show x)) to array to make String from char. -- Ger
 lastDigit :: Integer -> Integer
-lastDigit = undefined
+lastDigit x = read [(last (show x))]
 
 -- Drop the last digit from a number
 dropLastDigit :: Integer -> Integer
-dropLastDigit = undefined
+dropLastDigit x = read (replaceEmptyStringByZero (init (show x)))
+
+replaceEmptyStringByZero :: String -> String
+replaceEmptyStringByZero x = if (length x) > 0 then x
+                                               else "0"
 
 -- Exercise 2 -----------------------------------------
 
 toRevDigits :: Integer -> [Integer]
-toRevDigits = undefined
+toRevDigits x = if x > 0 then lastDigit x : toRevDigits (dropLastDigit x)
+                         else []
 
 -- Exercise 3 -----------------------------------------
 
 -- Double every second number in a list starting on the left.
 doubleEveryOther :: [Integer] -> [Integer]
-doubleEveryOther = undefined
+doubleEveryOther xs = undefined
 
 -- Exercise 4 -----------------------------------------
 
@@ -34,12 +40,3 @@ sumDigits = undefined
 -- Validate a credit card number using the above functions.
 luhn :: Integer -> Bool
 luhn = undefined
-
--- Exercise 6 -----------------------------------------
-
--- Towers of Hanoi for three pegs
-type Peg = String
-type Move = (Peg, Peg)
-
-hanoi :: Integer -> Peg -> Peg -> Peg -> [Move]
-hanoi = undefined
