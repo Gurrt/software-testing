@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall #-}
-module HW01 where
+module CSI where
 
 data Boy = Matthew | Peter | Jack | Arnold | Carl 
             deriving (Eq,Show)
@@ -7,6 +7,16 @@ data Boy = Matthew | Peter | Jack | Arnold | Carl
 boys = [Matthew, Peter, Jack, Arnold, Carl]
 
 says :: Boy -> Boy -> Bool
+says Carl Arnold = False 
+says Jack Matthew = False
+says Jack Peter = False
+says x y = undefined
+
+getLiars :: [Boy] -> Bool
+getLiars 
+
+expression :: Boy -> Bool
+
 
 accusers :: Boy -> [Boy]
 
