@@ -26,17 +26,33 @@ toRevDigits x = if x > 0 then lastDigit x : toRevDigits (dropLastDigit x)
 
 -- Double every second number in a list starting on the left.
 doubleEveryOther :: [Integer] -> [Integer]
-doubleEveryOther xs = undefined
+doubleEveryOther [] = []
+doubleEveryOther xs = head xs : doubleNow (tail xs)
+
+doubleNow :: [Integer] -> [Integer]
+doubleNow [] = []
+doubleNow xs = 2 * (head xs) : doubleEveryOther (tail xs)
 
 -- Exercise 4 -----------------------------------------
 
 -- Calculate the sum of all the digits in every Integer.
 sumDigits :: [Integer] -> Integer
-sumDigits = undefined
-
+sumDigits xs = sumLeft (fixLeftmostDigit xs)
+								 			
+-- Splits the starting digit so it can be used to correctly calculate sum
+-- if starting value of that digit >= 10											
+fixLeftmostDigit :: [Integer] -> [Integer]
+fixLeftmostDigit xs = if (head xs > 9) then (head xs) - 9 : tail xs
+                                       else xs
+														 
+-- Sums every digit seperately (substracting 9 is the same as adding the digits seperately for values under 20)
+sumLeft :: [Integer] -> Integer
+sumLeft xs = if (length xs) == 1 then head xs
+                                 else if (head (tail xs)) > 9 then sumLeft (head xs + ((head (tail xs)) - 9)  : tail (tail xs))
+								                              else sumLeft (head xs + head (tail xs) : tail (tail xs))
 
 -- Exercise 5 -----------------------------------------
 
 -- Validate a credit card number using the above functions.
 luhn :: Integer -> Bool
-luhn = undefined
+luhn x = (lastDigit x) == 10 - lastDigit((sumDigits (tail (doubleEveryOther (toRevDigits x)))))	
