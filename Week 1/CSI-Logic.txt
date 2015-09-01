@@ -1,0 +1,5 @@
+Matthew = not Carl && not Matthew
+Peter = Matthew || Jack
+Jack = ( Carl || Mattthew ) && (not Matthew && not Jack)
+Arnold = (not Carl && not Matthew && not Jack) || (Carl || Matthew || Jack)
+Carl = not (not Carl && not Matthew && not Jack) || (Carl || Matthew || Jack)
