@@ -2,4 +2,14 @@ Matthew = not Carl && not Matthew
 Peter = Matthew || Jack
 Jack = ( Carl || Mattthew ) && (not Matthew && not Jack)
 Arnold = (not Carl && not Matthew && not Jack) || (Carl || Matthew || Jack)
-Carl = not (not Carl && not Matthew && not Jack) || (Carl || Matthew || Jack)
+Carl = (not Carl && not Matthew && Jack) || Carl and && not Jack
+
+Two lie and Tree speak the truth.
+
+Arnold and Carl contradict eachother (Carl says that Arnold lies), so one of them must be lying.
+Jack says that Matthew or Peter are lying, since there are only two liars and not three, Jack is lying.
+Furthermore Arnold says that either Matthew or Peter is lying, but since Jack is a liar and either Arnold or Carl is lying, this means that Matthew and Peter both speak the truth and thus Arnold is lying.
+
+Liars : Arnold, Jack
+Truthful: Matthew, Peter, Carl
+Thief : Jack
