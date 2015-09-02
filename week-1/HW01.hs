@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wall #-}
 module HW01 where
 
 -- Exercise 1 -----------------------------------------
@@ -13,7 +12,7 @@ dropLastDigit :: Integer -> Integer
 dropLastDigit x = read (replaceEmptyStringByZero (init (show x)))
 
 replaceEmptyStringByZero :: String -> String
-replaceEmptyStringByZero x = if (length x) > 0 then x
+replaceEmptyStringByZero x = if length x > 0 then x
                                                else "0"
 
 -- Exercise 2 -----------------------------------------
@@ -38,21 +37,21 @@ doubleNow xs = 2 * (head xs) : doubleEveryOther (tail xs)
 -- Calculate the sum of all the digits in every Integer.
 sumDigits :: [Integer] -> Integer
 sumDigits xs = sumLeft (fixLeftmostDigit xs)
-								 			
+
 -- Splits the starting digit so it can be used to correctly calculate sum
--- if starting value of that digit >= 10											
+-- if starting value of that digit >= 10
 fixLeftmostDigit :: [Integer] -> [Integer]
 fixLeftmostDigit xs = if (head xs > 9) then (head xs) - 9 : tail xs
                                        else xs
-														 
+
 -- Sums every digit seperately (substracting 9 is the same as adding the digits seperately for values under 20)
 sumLeft :: [Integer] -> Integer
 sumLeft xs = if (length xs) == 1 then head xs
                                  else if (head (tail xs)) > 9 then sumLeft (head xs + ((head (tail xs)) - 9)  : tail (tail xs))
-								                              else sumLeft (head xs + head (tail xs) : tail (tail xs))
+                                 else sumLeft (head xs + head (tail xs) : tail (tail xs))
 
 -- Exercise 5 -----------------------------------------
 
 -- Validate a credit card number using the above functions.
 luhn :: Integer -> Bool
-luhn x = (lastDigit x) == 10 - lastDigit((sumDigits (tail (doubleEveryOther (toRevDigits x)))))	
+luhn x = (lastDigit x) == 10 - lastDigit((sumDigits (tail (doubleEveryOther (toRevDigits x)))))
