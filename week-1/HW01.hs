@@ -11,7 +11,7 @@ lastDigit x = read [last (show x)]
 dropLastDigit :: Integer -> Integer
 dropLastDigit x = read (replaceEmptyStringByZero (init (show x)))
 
--- null "" => True
+-- null "" => True, improves laziness and it's easier to check by GHCi.
 replaceEmptyStringByZero :: String -> String
 replaceEmptyStringByZero x = if not (null x) then x else "0"
 
