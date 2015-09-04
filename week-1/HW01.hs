@@ -5,21 +5,22 @@ module HW01 where
 -- Get the last digit from a number
 -- Note : casting (last (show x)) to array to make String from char. -- Ger
 lastDigit :: Integer -> Integer
-lastDigit x = read [(last (show x))]
+lastDigit x = read [last (show x)]
 
 -- Drop the last digit from a number
 dropLastDigit :: Integer -> Integer
 dropLastDigit x = read (replaceEmptyStringByZero (init (show x)))
 
+-- null "" => True, improves laziness and it's easier to check by GHCi.
 replaceEmptyStringByZero :: String -> String
-replaceEmptyStringByZero x = if length x > 0 then x
-                                               else "0"
+replaceEmptyStringByZero x = if not (null x) then x else "0"
 
 -- Exercise 2 -----------------------------------------
 
 toRevDigits :: Integer -> [Integer]
-toRevDigits x = if x > 0 then lastDigit x : toRevDigits (dropLastDigit x)
-                         else []
+toRevDigits x
+    | x > 0     = lastDigit x : toRevDigits (dropLastDigit x)
+    | otherwise = []
 
 -- Exercise 3 -----------------------------------------
 
@@ -30,7 +31,7 @@ doubleEveryOther xs = head xs : doubleNow (tail xs)
 
 doubleNow :: [Integer] -> [Integer]
 doubleNow [] = []
-doubleNow xs = 2 * (head xs) : doubleEveryOther (tail xs)
+doubleNow xs = 2 * head xs : doubleEveryOther (tail xs)
 
 -- Exercise 4 -----------------------------------------
 
@@ -41,17 +42,19 @@ sumDigits xs = sumLeft (fixLeftmostDigit xs)
 -- Splits the starting digit so it can be used to correctly calculate sum
 -- if starting value of that digit >= 10
 fixLeftmostDigit :: [Integer] -> [Integer]
-fixLeftmostDigit xs = if (head xs > 9) then (head xs) - 9 : tail xs
-                                       else xs
+fixLeftmostDigit xs
+    | head xs > 9 = head xs - 9 : tail xs
+    | otherwise   =  xs
 
 -- Sums every digit seperately (substracting 9 is the same as adding the digits seperately for values under 20)
 sumLeft :: [Integer] -> Integer
-sumLeft xs = if (length xs) == 1 then head xs
-                                 else if (head (tail xs)) > 9 then sumLeft (head xs + ((head (tail xs)) - 9)  : tail (tail xs))
-                                 else sumLeft (head xs + head (tail xs) : tail (tail xs))
+sumLeft xs
+    | length xs == 1 = head xs
+    | head (tail xs) > 9 = sumLeft (head xs + (head (tail xs) - 9)  : tail (tail xs))
+    | otherwise =  sumLeft (head xs + head (tail xs) : tail (tail xs))
 
 -- Exercise 5 -----------------------------------------
 
 -- Validate a credit card number using the above functions.
 luhn :: Integer -> Bool
-luhn x = (lastDigit x) == 10 - lastDigit((sumDigits (tail (doubleEveryOther (toRevDigits x)))))
+luhn x = lastDigit x == (10 - lastDigit (sumDigits (tail (doubleEveryOther (toRevDigits x)))))
