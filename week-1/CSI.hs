@@ -41,8 +41,8 @@ accusers accused = [accuser | accuser <- boys, says accuser accused]
 
 -- The one that all the honest kids point.
 guilty :: [Boy]
-guilty = []
+guilty = [boy | boy <- boys, length (accusers boy) == 3]
 
 -- The lier is didn't claim guilty therefore is a lier. The kid that didn't accused him too.
 honest :: [Boy]
-honest = []
+honest = accusers (head guilty)
