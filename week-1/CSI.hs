@@ -39,7 +39,8 @@ says Carl y = not(says Arnold y)
 accusers :: Boy -> [Boy]
 accusers accused = [accuser | accuser <- boys, says accuser accused]
 
--- The one that all the honest kids point.
+-- The one that all the honest kids point. Only 3 will say the truth, therefore,
+-- the one accused by 3 is the right one.
 guilty :: [Boy]
 guilty = [boy | boy <- boys, length (accusers boy) == 3]
 

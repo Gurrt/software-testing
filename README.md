@@ -15,7 +15,7 @@ The ```master``` branch is the evaluation branch: it contains the final code to 
 
 The code for the exercises of each week are in separated folders. The build tool used is ```cabal``` as it is suggested in [2]. In order to execute the code for that week:
 ```
-cabal repl week-n
+cabal repl week-n-ex-n
 runTests allTests
 ```
 If the output is empty, they have been successful.
