@@ -24,7 +24,19 @@ checkTriangle a b c
     | isEquilateralTriangle a b c = Equilateral
     | isIsoscelesTriangle a b c = Isosceles
     | otherwise = Other
-	
+
 -- Permutation Assignment
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys = (length xs == length ys) && all (\x -> elem x ys) xs
+
+-- Derangement Assignment
+isDerangement :: [Integer] -> [Integer] -> Bool
+isDerangement (x:xs) (y:ys)
+    | not (isPermutation (x:xs) (y:ys)) = False
+    | otherwise = (recDerangementCheck (x:xs) (y:ys))
+
+recDerangementCheck :: [Integer] -> [Integer] -> Bool
+recDerangementCheck [] [] = True
+recDerangementCheck (x:xs) (y:ys)
+    | (x == y) = False
+    | otherwise = recDerangementCheck xs ys
