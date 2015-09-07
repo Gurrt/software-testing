@@ -30,4 +30,5 @@ executable week-1
     default-extensions: ExistentialQuantification,
                         OverloadedStrings
     build-depends: base,
-                   hspec >= 1.8
+                   hspec >= 1.8,
+                   random
