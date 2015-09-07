@@ -1,3 +1,4 @@
+-- Triangle Assignment
 data Shape = NoTriangle | Equilateral 
             | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
@@ -23,3 +24,7 @@ checkTriangle a b c
     | isEquilateralTriangle a b c = Equilateral
     | isIsoscelesTriangle a b c = Isosceles
     | otherwise = Other
+	
+-- Permutation Assignment
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys = (length xs == length ys) && all (\x -> elem x ys) xs
