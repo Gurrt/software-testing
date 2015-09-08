@@ -72,7 +72,7 @@ removeNonAlphaNum (x:xs)
     | otherwise = removeNonAlphaNum xs
 
 shiftFour :: String -> String
-shiftFour (a:b:c:d:xs) = xs ++ [a] ++ [b] ++ [c] ++ [d]
+shiftFour (a:b:c:d:xs) = xs ++ [a:b:c:d]
 shiftFour _ = []
 
 convertLetters :: String -> String
