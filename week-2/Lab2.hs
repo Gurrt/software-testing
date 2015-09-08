@@ -1,4 +1,5 @@
 -- Triangle Assignment
+-- Time taken : 40 minutes
 data Shape = NoTriangle | Equilateral 
             | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
@@ -26,10 +27,12 @@ checkTriangle a b c
     | otherwise = Other
 
 -- Permutation Assignment
+-- Time taken : 30 minutes
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys = (length xs == length ys) && all (\x -> elem x ys) xs
 
 -- Derangement Assignment
+-- Time taken: 1 Hour
 isDerangement :: [Integer] -> [Integer] -> Bool
 isDerangement (x:xs) (y:ys)
     | not (isPermutation (x:xs) (y:ys)) = False
@@ -40,3 +43,15 @@ recDerangementCheck [] [] = True
 recDerangementCheck (x:xs) (y:ys)
     | (x == y) = False
     | otherwise = recDerangementCheck xs ys
+
+deran :: Integer -> [[Integer]]
+deran x
+    | x <= 1 = [[]]
+    | otherwise = [ perm | perm <- perms [0..x-1], isDerangement perm [0..x-1]]
+
+-- Copied from assignment 1
+perms :: [a] ->[[a]]
+perms [] = [[]]
+perms (x:xs) = concat (map (insrt x) (perms xs)) where
+insrt x [] = [[x]]
+insrt x (y:ys) = (x:y:ys) : map (y:) (insrt x ys)
