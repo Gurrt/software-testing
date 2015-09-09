@@ -37,9 +37,9 @@ isPermutation xs ys = (length xs == length ys) && all (\x -> elem x ys) xs
 -- Derangement Assignment
 -- Time taken: 1 Hour
 isDerangement :: [Integer] -> [Integer] -> Bool
-isDerangement (x:xs) (y:ys)
-    | not (isPermutation (x:xs) (y:ys)) = False
-    | otherwise = (recDerangementCheck (x:xs) (y:ys))
+isDerangement xs ys
+    | not (isPermutation xs ys) = False
+    | otherwise = recDerangementCheck xs ys
 
 recDerangementCheck :: [Integer] -> [Integer] -> Bool
 recDerangementCheck [] [] = True
@@ -72,7 +72,7 @@ removeNonAlphaNum (x:xs)
     | otherwise = removeNonAlphaNum xs
 
 shiftFour :: String -> String
-shiftFour (a:b:c:d:xs) = xs ++ [a:b:c:d]
+shiftFour (a:b:c:d:xs) = xs ++ [a] ++ [b] ++ [c] ++ [d]
 shiftFour _ = []
 
 convertLetters :: String -> String
