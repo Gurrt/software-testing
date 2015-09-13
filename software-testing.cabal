@@ -40,3 +40,13 @@ executable week-1-ex-2
                        OverloadedStrings
    build-depends: base,
                   hspec >= 1.8
+
+executable week-2
+    ghc-options: -Wall
+    hs-source-dirs: week-2
+    main-is: Lab2Tests.hs
+    default-extensions: ExistentialQuantification,
+                        OverloadedStrings
+    build-depends: base,
+                   hspec >= 1.8,
+                   QuickCheck
