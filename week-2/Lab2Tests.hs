@@ -74,3 +74,15 @@ main = hspec $ do
 
         it "NL39 RABO 0300 065! 264$ is still a valid Dutch IBAN because the specs told us to filter ASCII characters" $
             iban "NL39 RABO 0300 065! 264$" `shouldBe` (True :: Bool)
+
+        it "0000 0002 3569 8741 is not a valid IBAN because the country prefix doesn't exist " $
+            iban "0000 0002 3569 8741" `shouldBe` (False :: Bool)
+
+        it "EE38 2200 2210 2014 5685 is not a valid IBAN because it is valid one with missing digits" $
+            iban "EE38 2200 2210 2014 56" `shouldBe` (False :: Bool)
+
+        it "FR14 2004 1010 5050 0001 3M02 606 is not a valid IBAN because it is a permutation of a valid one" $
+            iban "FR14 2004 1010 5050 0001 3M02 606" `shouldBe` (False :: Bool)
+
+        it "IT40 S054 2811 1010 0000 0128 456 is not a valid IBAN because it is a misspell of a valid one" $
+            iban "IT40 S054 2811 1010 0000 0128 456" `shouldBe` (False :: Bool)
