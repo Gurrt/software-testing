@@ -60,8 +60,7 @@ main = hspec $ do
             isDerangement [1 :: Integer, 2, 3, 4] [2, 3, 4, 1] `shouldBe` (True :: Bool)
 
         it "The function deran procudes derangements" $
-            -- property  (\x -> all (isDerangement [0..x-1]) deran x)
-            pendingWith "Fix the definition of the property in the test"
+            property  (\x -> all (isDerangement [0..x-1]) (deran x))
 
     describe "Exercise 4: " $ do
         it "NL39 RABO 0300 0652 64 is a valid Dutch IBAN" $
@@ -72,3 +71,6 @@ main = hspec $ do
 
         it "DE89 3704 0044 0532 0130 00  is a valid German IBAN" $
             iban "DE89 3704 0044 0532 0130 00" `shouldBe` (True :: Bool)
+
+        it "NL39 RABO 0300 065! 264$ is still a valid Dutch IBAN because the specs told us to filter ASCII characters" $
+            iban "NL39 RABO 0300 065! 264$" `shouldBe` (True :: Bool)
