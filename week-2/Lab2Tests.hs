@@ -26,6 +26,21 @@ main = hspec $ do
         it "recognises when it is not a triangle" $
             triangle 2 2 5 `shouldBe` (NoTriangle::Shape)
 
-    describe "Exercise 2: Recognizing Permutations" $
-        it "Permutation" $
-            True `shouldBe` True
+    describe "Exercise 2: Recognizing Permutations" $ do
+        it "[3,2,1] is permutation of [1,2,3]" $
+            isPermutation [1 :: Integer, 2, 3] [3, 2, 1] `shouldBe` (True :: Bool)
+
+        it "[2,3,1] is a permutation of [1,2,3]" $
+            isPermutation [1 :: Integer, 2, 3] [2, 3, 1] `shouldBe` (True :: Bool)
+
+        it "[1,2,3] is not a permutation of [1,2,3] because it is the same" $
+            isPermutation [1 :: Integer, 2, 3] [1, 2, 3] `shouldBe` (False :: Bool)
+
+        it "[2,2,0] is not a permutation of [1,2,3]" $
+            isPermutation [1 :: Integer, 2, 3] [2, 2, 0] `shouldBe` (False :: Bool)
+
+        it "[1,2] is not a permutation of [1,2,3] because it is a smaller array" $
+            isPermutation [1 :: Integer, 2] [1, 2, 3] `shouldBe` (False :: Bool)
+
+        it "[1,2,3,4] is not a permutation of [1,2,3] because it is a bigger array" $
+            isPermutation [1 :: Integer, 2, 3, 4] [1, 2, 3] `shouldBe` (False :: Bool)

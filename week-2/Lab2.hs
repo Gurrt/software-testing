@@ -33,7 +33,7 @@ module Lab2 where
     -- Permutation Assignment
     -- Time taken : 30 minutes
     isPermutation :: Eq a => [a] -> [a] -> Bool
-    isPermutation xs ys = (length xs == length ys) && all (`elem` ys) xs
+    isPermutation xs ys = (xs /= ys) && (length xs == length ys) && all (`elem` ys) xs
 
     -- Derangement Assignment
     -- Time taken: 1 Hour
