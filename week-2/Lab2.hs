@@ -116,4 +116,4 @@ module Lab2 where
 
     modulo97FirstNine :: String -> String
     modulo97FirstNine [] = []
-    modulo97FirstNine xs = show (read (take 9 xs) `mod` 97) ++ drop 9 xs
+    modulo97FirstNine xs = show (read (take 9 xs) `mod` (97 :: Integer)) ++ drop 9 xs
