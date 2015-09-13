@@ -23,12 +23,20 @@ library
   -- hs-source-dirs:
   default-language:    Haskell2010
 
-executable week-1
+executable week-1-ex-1
     ghc-options: -Wall
     hs-source-dirs: week-1
     main-is: HW01Tests.hs
     default-extensions: ExistentialQuantification,
                         OverloadedStrings
     build-depends: base,
-                   hspec >= 1.8,
-                   random
+                   hspec >= 1.8
+
+executable week-1-ex-2
+   ghc-options: -Wall
+   hs-source-dirs: week-1
+   main-is: CSI.hs
+   default-extensions: ExistentialQuantification,
+                       OverloadedStrings
+   build-depends: base,
+                  hspec >= 1.8
