@@ -1,4 +1,5 @@
 import Test.Hspec
+import Test.QuickCheck
 import Lab2
 
 -- We use HSpec in order to do the testing.
@@ -44,3 +45,30 @@ main = hspec $ do
 
         it "[1,2,3,4] is not a permutation of [1,2,3] because it is a bigger array" $
             isPermutation [1 :: Integer, 2, 3, 4] [1, 2, 3] `shouldBe` (False :: Bool)
+
+    describe "Exercise 3: Recognizing and generating derangements" $ do
+        it "[2,3,1] is a derangement of [1,2,3]" $
+            isDerangement [1 :: Integer, 2, 3] [2, 3, 1] `shouldBe` (True :: Bool)
+
+        it "[3,2,1] is not a derangement of [1,2,3] because 2 is in the 2nd position" $
+            isDerangement [1 :: Integer, 2, 3] [3, 2, 1] `shouldBe` (False :: Bool)
+
+        it "[2,3,4,1] is not a derangement of [1,2,3] because it has a different size" $
+            isDerangement [1 :: Integer, 2, 3] [2, 3, 4, 1] `shouldBe` (False :: Bool)
+
+        it "[2,3,4,1] is a derangement of [1,2,3,4]" $
+            isDerangement [1 :: Integer, 2, 3, 4] [2, 3, 4, 1] `shouldBe` (True :: Bool)
+
+        it "The function deran procudes derangements" $
+            -- property  (\x -> all (isDerangement [0..x-1]) deran x)
+            pendingWith "Fix the definition of the property in the test"
+
+    describe "Exercise 4: " $ do
+        it "NL39 RABO 0300 0652 64 is a valid Dutch IBAN" $
+            iban "NL39 RABO 0300 0652 64" `shouldBe` (True :: Bool)
+
+        it "ES80 2310 0001 1800 0001 2345 is a valid Spanish IBAN" $
+            iban "ES80 2310 0001 1800 0001 2345" `shouldBe` (True :: Bool)
+
+        it "DE89 3704 0044 0532 0130 00  is a valid German IBAN" $
+            iban "DE89 3704 0044 0532 0130 00" `shouldBe` (True :: Bool)
