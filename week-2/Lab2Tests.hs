@@ -60,7 +60,17 @@ main = hspec $ do
             isDerangement [1 :: Integer, 2, 3, 4] [2, 3, 4, 1] `shouldBe` (True :: Bool)
 
         it "The function deran procudes derangements" $
-            property  (\x -> all (isDerangement [0..x-1]) (deran x))
+            --
+            -- property  (\x -> x >=2 ==> all (isDerangement [0..x-1]) (deran x))
+            --
+            -- This line test the property with randomly generated values but
+            -- due to the combinatory explosion produced, it is not practical to
+            -- do it because the test will take ages to execute. Instead, we
+            -- have added the test for cases up to 5 which take s reasonable time.
+            --
+            pendingWith "See the comments in the source code"
+        it "The function deran 5 generates nothing but derangements" $
+            all (isDerangement [0..4]) (deran 5) `shouldBe` (True :: Bool)
 
     describe "Exercise 4: " $ do
         it "NL39 RABO 0300 0652 64 is a valid Dutch IBAN" $
