@@ -23,10 +23,53 @@ entails f g = tautology (Impl f g)
 equiv :: Form -> Form -> Bool
 equiv f g = tautology (Equiv f g)
 
---exercise 2
 
--- Exercise 3
--- Time spent: 2.5 hours (1 impl, 1.5 test)
+-- test cases
+-- always false
+contradictions = [(Cnj [p, (Neg p)]),                           -- p AND ~p
+                  (Equiv p (Neg p)),                            -- p <-> ~p
+                  (Neg (Dsj [p, (Neg p)])),                     -- ~(p OR ~p)
+                  (Impl (Dsj [p, (Neg p)]) (Cnj [p, (Neg p)]))] -- (p OR ~p) -> (p AND ~p)
+-- always true
+tautologies    = [(Dsj [p, (Neg p)]),                           -- p OR ~p
+                  (Equiv p p),                                  -- p <-> p
+                  (Impl (Cnj [p, q]) q)]                        -- (p AND q) -> q
+-- entailment
+entailments    = [(p, p),                                       -- p |= p
+                 ((Cnj [p, q]), (Dsj [p, q])),                  -- p AND q |= p OR q
+                 ((Cnj [p, q]), p)]                             -- p AND q |= p
+-- same valuations
+equivalences   = [((Cnj [p, q]), (Neg(Dsj [Neg(p), Neg(q)])))]  -- (p AND q) <=> ~(~p OR ~q)
+
+-- combined test cases
+allUnaryTests = [(contradictions, contradiction, "Contradictions"),
+                  (tautologies, tautology, "Tautologies")]
+allBinaryTests = [(entailments, entails, "Entailments"),
+                   (equivalences, equiv, "Equivalences")]
+
+-- single assertion
+testUnary :: [Form] -> (Form -> Bool) -> Bool
+testUnary tests fn = and (map (\ item -> fn item) tests)
+
+-- compare assertion
+testBinary :: [(Form, Form)] -> (Form -> Form -> Bool) -> Bool
+testBinary tests fn = and (map (\ (item1, item2) -> fn item1 item2) tests)
+
+-- run test suite for unary functions
+runUnaryTests :: [([Char],Bool)]
+runUnaryTests = map (\ (testCase, fn, name) -> (name, (testUnary testCase fn))) allUnaryTests
+
+-- run test suite for comparing formulas
+runBinaryTests :: [([Char],Bool)]
+runBinaryTests = map (\ (testCase, fn, name) -> (name, (testBinary testCase fn))) allBinaryTests
+
+-- run whole test suite
+runLogicTests :: [([Char],Bool)]
+runLogicTests = runUnaryTests ++ runBinaryTests
+
+
+-- exercise 3
+
 -- precondition: input forms are in cnf
 dist' :: Form -> Form -> Form
 dist' p (Cnj fs) = Cnj (map (\ x -> dist' p x) fs)
@@ -52,8 +95,5 @@ cnf (Dsj fs) = dist (map cnf fs)
 -- Function that can transform any formula to CNF
 formToCNF :: Form -> Form
 formToCNF = cnf . nnf . arrowfree
--- VVZ: You miss another function that would 'flatten' nested conjunctions and disjunctions. The formulae on the slides used associativity and hence assumed the flattener of x & (y & z) to x & y & z in the head of the reader, but in the implementation your rewritings could make quite a mess of the structure of conjunction/disjunction lists, not to mention that the input is 'any formula', so it can be already messed up.
--- VVZ: formToCNF (Cnj [Cnj [p,q,p], q])
--- VVZ: I expect to see (p AND q AND p AND q), not ((p AND q AND p) AND q)
 
 
