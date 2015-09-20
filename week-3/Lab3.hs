@@ -1,8 +1,6 @@
 module Lab3 where
-import Data.List
 import System.Random
 import Lecture3
-
 
 -- Exercise 1
 -- Time: 2 Hours
@@ -38,13 +36,14 @@ isEntailment ((x,y):xs)
 
 -- Equivalence is where the truth table of F equals the truth table of G
 -- Definition is very straightforward and relies heavily on the evl and allVals functions from the lecture, which we assume to be correct
---  so we just checked definition with a few short formulas.
+-- so we just checked definition with a few short formulas.
 equiv :: Form -> Form -> Bool
 equiv f g = truths f == truths g
 
---Exercise 2
---Our goal is to test this function
 
+--Exercise 2
+
+--Our goal is to test this function
 -- Precondition, string consists of digits,'(',')','*','+','-','==>','<=>'
 -- parse :: String -> [Form]
 -- parse s = [ f | (f,_) <- parseForm (lexer s) ]
@@ -121,45 +120,95 @@ testForms n pr = do
 testParser :: IO()
 testParser = testForms 50  (\ f -> let [g] = parse (show f) in f == g)
 
---Exercise 3
+
+-- Exercise 3
+-- Function to transform a form into a CNF
 cnf :: Form -> Form
 cnf = distribute.nnf.arrowfree
 
---Parse a given string, convert the given Forms to CNF, Show the forms
+-- Parse a given string, convert the given Forms to CNF, Show the forms
 stringToCNF:: String -> String
 stringToCNF  = showLst.convertToCNF.parse
 
---Make a Form in the Form list arrowfree, move negations inward, and distribute Disjunctions
+-- Make a Form in the Form list arrowfree, move negations inward, and distribute Disjunctions
 convertToCNF:: [Form] -> [Form]
 convertToCNF [] = []
 convertToCNF (f:fs) = (distribute.nnf.arrowfree) f : convertToCNF fs
 
---Negations and prop's can be returned immedately, Conjunction only need the forms within distributed
+-- Negations and prop's can be returned immedately, Conjunction only need the forms within distributed
 -- Perform distrubition specifically for Disjunctions
 distribute:: Form -> Form
 distribute (Prop x) = Prop x
 distribute (Neg (Prop x)) = Neg (Prop x)
 distribute (Cnj fs) = Cnj (map distribute fs)
 distribute (Dsj fs) = distributeDsjFormList fs
+-- This case will never happen because it is a precondition of the function to not contain "arrow" functions.
 distribute _ = undefined
 
---Perform disjucntion distribution on all Forms in a Disjuntion
+-- Perform disjucntion distribution on all Forms in a Disjuntion
 distributeDsjFormList:: [Form] -> Form
 distributeDsjFormList [] = error "Disjunction on one element?"
 distributeDsjFormList [f] = f
 distributeDsjFormList (f : fs) = distributeDsj' f (distributeDsjFormList fs)
 
---If either the first or the second argument is a Conjuction apply distribution according to Distributive laws of Disjunctions
---In any other case distribute the 2 forms and add them to a disjunction.
+-- If either the first or the second argument is a Conjuction apply distribution according to Distributive laws of Disjunctions
+-- In any other case distribute the 2 forms and add them to a disjunction.
 distributeDsj':: Form -> Form -> Form
 distributeDsj' f1 (Cnj(f2:f3)) = Cnj [Dsj[f1', f2'] ,Dsj(f1':f3')] where
-                         f1' = distribute f1
-                         f2' = distribute f2
-                         f3' = map (\f -> distribute f ) f3
+                                 f1' = distribute f1
+                                 f2' = distribute f2
+                                 f3' = map distribute f3
 distributeDsj' (Cnj(f2:f3)) f1 = Cnj [Dsj[f1', f2'] ,Dsj(f1':f3')] where
                                  f1' = distribute f1
                                  f2' = distribute f2
-                                 f3' = map (\f -> distribute f ) f3
+                                 f3' = map distribute f3
 distributeDsj' f1 f2 = Dsj [f1', f2'] where
                        f1' = distribute f1
                        f2' = distribute f2
+
+-- Exercise 4
+-- Starting time 00:30
+
+-- The purpose of this exercise is to test the correctness of the previous exercise.
+-- The exercise defines a function to transform a valid boolean formula into a CNF.
+-- CNF are formulas that hold the following properties.
+-- * They only allow operations AND, OR and negations.
+-- * The negation can be only applied on the literals.
+-- * The formula is expressed conjuntion of clauses which are literals or disjunctions.
+-- Therefore, the output of the function must hold these properties and be equivalent
+-- to the original formula to be a correct output.
+
+-- It tests if it only contains AND, OR and negations.
+isArrowFree :: Form -> Bool
+isArrowFree (Prop _)    = True
+isArrowFree (Neg f)     = isArrowFree f
+isArrowFree (Cnj fs)    = all isArrowFree fs
+isArrowFree (Dsj fs)    = all isArrowFree fs
+isArrowFree (Impl _ _)  = False
+isArrowFree (Equiv _ _) = False
+
+noNegatedFunctions :: Form -> Bool
+noNegatedFunctions (Prop _) = True
+noNegatedFunctions (Neg (Prop _))  = True
+noNegatedFunctions (Neg (Cnj _)) = False
+noNegatedFunctions (Neg (Dsj _)) = False
+noNegatedFunctions (Neg (Impl _ _ )) = False
+noNegatedFunctions (Neg (Equiv _ _)) = False
+noNegatedFunctions (Neg (Neg f)) = noNegatedFunctions f
+noNegatedFunctions (Cnj fs) = all noNegatedFunctions fs
+noNegatedFunctions (Dsj fs) = all noNegatedFunctions fs
+noNegatedFunctions (Impl f g) = noNegatedFunctions f && noNegatedFunctions g
+noNegatedFunctions (Equiv f g) = noNegatedFunctions f && noNegatedFunctions g
+
+isClause :: Form -> Bool
+isClause (Prop _) = True
+isClause (Neg f) = isClause f
+isClause (Dsj fs) = all isClause fs
+isClause _ = False
+
+isConjOfClauses :: Form -> Bool
+isConjOfClauses (Cnj fs) = all isClause fs
+isConjOfClauses f = isClause f
+
+isCNF :: Form -> Bool
+isCNF f = isArrowFree f && noNegatedFunctions f && isConjOfClauses f
