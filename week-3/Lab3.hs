@@ -46,11 +46,80 @@ equiv f g = truths f == truths g
 --Our goal is to test this function
 
 -- Precondition, string consists of digits,'(',')','*','+','-','==>','<=>'
---parse :: String -> [Form]
---parse s = [ f | (f,_) <- parseForm (lexer s) ]
+-- parse :: String -> [Form]
+-- parse s = [ f | (f,_) <- parseForm (lexer s) ]
 -- Postcondition, list of Forms corresponding to the used strings
 
---See Tests.hs
+-- We took a well know function as starting point in order to generate random
+-- formulas that generates an integer of n numbers, then it generates a random
+-- formula with limit 5 for this case. In case of formulas with zero levels, it
+-- generates an arbitrary number of indices. We make an arrangement for formulas
+-- until 5 levels in order to fulfil some syntactic forms and then generate
+-- random formulas with variable levels. Then we create the test function with
+-- 50 random generated formulas showing the ones that pass the parsing test and
+-- the ones that do not.
+
+-- To execute the test, run
+-- testParser
+
+-- Generating random formulas
+getRandomInt :: Int -> IO Int
+getRandomInt n = getStdRandom (randomR (0,n))
+
+getRandomF :: IO Form
+getRandomF = do d <- getRandomInt 5
+                getRandomForm d
+
+getRandomForm :: Int -> IO Form
+getRandomForm 0 = do m <- getRandomInt 20
+                     return (Prop (m+1))
+
+getRandomForm d = do
+     n <- getRandomInt 5
+     case n of
+         0 -> do m <- getRandomInt 20
+                 return (Prop (m+1))
+         1 -> do f <- getRandomForm (d-1)
+                 return (Neg f)
+         2 -> do m <- getRandomInt 5
+                 fs <- getRandomForms (d-1) m
+                 return (Cnj fs)
+         3 -> do m <- getRandomInt 5
+                 fs <- getRandomForms (d-1) m
+                 return (Dsj fs)
+         4 -> do f <- getRandomForm (d-1)
+                 g <- getRandomForm (d-1)
+                 return (Impl f g)
+         5 -> do f <- getRandomForm (d-1)
+                 g <- getRandomForm (d-1)
+                 return (Equiv f g)
+
+
+getRandomFs :: Int -> IO [Form]
+getRandomFs n = do d <- getRandomInt 3
+                   getRandomForms d n
+
+
+getRandomForms :: Int -> Int -> IO [Form]
+getRandomForms _ 0 = return []
+getRandomForms d n = do
+    f <- getRandomForm d
+    fs <- getRandomForms d (n-1)
+    return (f:fs)
+
+test :: Int -> (Form -> Bool) -> [Form] -> IO ()
+test n _ [] = print (show n ++ " Valid")
+test n pr (f:fs) = if pr f then do print ("pass on: " ++ show f)
+                                   test n pr fs
+                   else error ("fail on: " ++ show f)
+
+testForms :: Int -> (Form -> Bool) -> IO ()
+testForms n pr = do
+    fs <- getRandomFs n
+    test n pr fs
+
+testParser :: IO()
+testParser = testForms 50  (\ f -> let [g] = parse (show f) in f == g)
 
 --Exercise 3
 cnf :: Form -> Form
