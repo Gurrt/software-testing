@@ -53,10 +53,12 @@ equiv f g = truths f == truths g
 --See Tests.hs
 
 --Exercise 3
+cnf :: Form -> Form
+cnf = distribute.nnf.arrowfree
 
 --Parse a given string, convert the given Forms to CNF, Show the forms
 stringToCNF:: String -> String
-stringToCNF s = (showLst.convertToCNF.parse) s
+stringToCNF  = showLst.convertToCNF.parse
 
 --Make a Form in the Form list arrowfree, move negations inward, and distribute Disjunctions
 convertToCNF:: [Form] -> [Form]
@@ -69,7 +71,8 @@ distribute:: Form -> Form
 distribute (Prop x) = Prop x
 distribute (Neg (Prop x)) = Neg (Prop x)
 distribute (Cnj fs) = Cnj (map distribute fs)
-distribute (Dsj fs) = distributeDsjFormList (fs)
+distribute (Dsj fs) = distributeDsjFormList fs
+distribute _ = undefined
 
 --Perform disjucntion distribution on all Forms in a Disjuntion
 distributeDsjFormList:: [Form] -> Form
@@ -80,11 +83,11 @@ distributeDsjFormList (f : fs) = distributeDsj' f (distributeDsjFormList fs)
 --If either the first or the second argument is a Conjuction apply distribution according to Distributive laws of Disjunctions
 --In any other case distribute the 2 forms and add them to a disjunction.
 distributeDsj':: Form -> Form -> Form
-distributeDsj' f1 (Cnj(f2:f3)) = Cnj [Dsj[f1', f2'] ,Dsj([f1']++f3')] where
+distributeDsj' f1 (Cnj(f2:f3)) = Cnj [Dsj[f1', f2'] ,Dsj(f1':f3')] where
                          f1' = distribute f1
                          f2' = distribute f2
                          f3' = map (\f -> distribute f ) f3
-distributeDsj' (Cnj(f2:f3)) f1 = Cnj [Dsj[f1', f2'] ,Dsj([f1']++f3')] where
+distributeDsj' (Cnj(f2:f3)) f1 = Cnj [Dsj[f1', f2'] ,Dsj(f1':f3')] where
                                  f1' = distribute f1
                                  f2' = distribute f2
                                  f3' = map (\f -> distribute f ) f3
