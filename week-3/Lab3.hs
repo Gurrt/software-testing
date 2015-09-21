@@ -82,10 +82,10 @@ getRandomForm d = do
                  return (Neg f)
          2 -> do m <- getRandomInt 5
                  fs <- getRandomForms (d-1) m
-                 return (Cnj fs)
+                 return (Cnj (Prop m:fs))
          3 -> do m <- getRandomInt 5
                  fs <- getRandomForms (d-1) m
-                 return (Dsj fs)
+                 return (Dsj (Prop m:fs))
          4 -> do f <- getRandomForm (d-1)
                  g <- getRandomForm (d-1)
                  return (Impl f g)
@@ -263,7 +263,7 @@ testInvalidCNF = test 3 (not.isCNF) [notcnf1, notcnf2, notcnf3]
 -- It should return true if the output is a CNF and the input and the output
 -- are equivalent. They are equivalent if the equivalent operation <=> is a tautology.
 isCNFandEquiv :: Form -> Bool
-isCNFandEquiv f = isCNF f' && tautology (Equiv f f')  where f' = cnf f
+isCNFandEquiv f = let f' = cnf f in isCNF f' && tautology (Equiv f f')
 
 testCNF :: IO()
 testCNF = testForms 50 isCNFandEquiv
