@@ -61,4 +61,14 @@ executable week-3
                         OverloadedStrings
     build-depends: base,
                    hspec,
+                   random 
+
+executable week-4
+    ghc-options: -Wall
+    hs-source-dirs: week-4
+    main-is: Lab4.hs 
+    default-extensions: ExistentialQuantification,
+                        OverloadedStrings
+    build-depends: base,
+                   QuickCheck,
                    random
