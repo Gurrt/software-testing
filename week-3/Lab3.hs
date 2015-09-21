@@ -167,18 +167,20 @@ distributeDsj' f1 f2 = Dsj [f1', f2'] where
                        f2' = distribute f2
 
 -- Exercise 4
--- Starting time 00:30
+-- Time spent: 2 hours.
 
 -- The purpose of this exercise is to test the correctness of the previous exercise.
 -- The exercise defines a function to transform a valid boolean formula into a CNF.
--- CNF are formulas that hold the following properties.
+-- CNF are formulas that hold the following properties:
+-- (Source: https://en.wikipedia.org/wiki/Conjunctive_normal_form)
 -- * They only allow operations AND, OR and negations.
 -- * The negation can be only applied on the literals.
 -- * The formula is expressed conjuntion of clauses which are literals or disjunctions.
+--
 -- Therefore, the output of the function must hold these properties and be equivalent
 -- to the original formula to be a correct output.
 
--- It tests if it only contains AND, OR and negations.
+-- Tests if it only contains AND, OR and negations.
 isArrowFree :: Form -> Bool
 isArrowFree (Prop _)    = True
 isArrowFree (Neg f)     = isArrowFree f
@@ -187,6 +189,7 @@ isArrowFree (Dsj fs)    = all isArrowFree fs
 isArrowFree (Impl _ _)  = False
 isArrowFree (Equiv _ _) = False
 
+-- Tests if the only literals are negated.
 noNegatedFunctions :: Form -> Bool
 noNegatedFunctions (Prop _) = True
 noNegatedFunctions (Neg (Prop _))  = True
@@ -200,15 +203,67 @@ noNegatedFunctions (Dsj fs) = all noNegatedFunctions fs
 noNegatedFunctions (Impl f g) = noNegatedFunctions f && noNegatedFunctions g
 noNegatedFunctions (Equiv f g) = noNegatedFunctions f && noNegatedFunctions g
 
+-- A CNF is a conjunction of cluases where a clause is a literal or a disjunction of literals.
+-- This functions test if the given formula is a clause.
 isClause :: Form -> Bool
 isClause (Prop _) = True
 isClause (Neg f) = isClause f
 isClause (Dsj fs) = all isClause fs
 isClause _ = False
 
+-- Test if the given formula is a conjunction of clauses.
 isConjOfClauses :: Form -> Bool
 isConjOfClauses (Cnj fs) = all isClause fs
 isConjOfClauses f = isClause f
 
+-- Finally, we define a function that combines the three previous properties.
+-- By design, all the functions cover all possible cases, even if they are not expected
+-- (for instance, an implication while testing if it is a clause). The design idea
+-- was to be able to combine all the properties is just one. This approach is slower
+-- because there are redundant tests but it is easier to combine all the properties.
 isCNF :: Form -> Bool
 isCNF f = isArrowFree f && noNegatedFunctions f && isConjOfClauses f
+
+-- In order to validate the properties, first we are going to run them against the
+-- the example cases in the source.
+cnf1 :: Form
+cnf1 = Cnj [Neg(Prop 1), Dsj[Prop 2, Prop 3]]
+
+cnf2 :: Form
+cnf2 = Cnj [Dsj[Prop 1, Prop 2], Dsj[Neg(Prop 2), Prop 3, Prop 4], Dsj[Prop 4, Neg(Prop 5)]]
+
+cnf3 :: Form
+cnf3 = Cnj[Prop 1, Prop 2]
+
+cnf4 :: Form
+cnf4 = Dsj [Prop 1, Prop 2]
+
+notcnf1 :: Form
+notcnf1 = Neg(Dsj[Prop 1, Prop 2])
+
+notcnf2 :: Form
+notcnf2 = Dsj [Prop 1, Cnj [Prop 2, Prop 3]]
+
+notcnf3 :: Form
+notcnf3 = Cnj [Prop 1, Dsj[Prop 2, Cnj [Prop 3, Prop 4]]]
+
+-- In order to test the formulas, we are using the functions defined in the exercise 2
+-- This could be done using QuickCheck but due to time restrictions, it has not been
+-- possible.
+
+-- Test the valid cases.
+testValidCNF :: IO()
+testValidCNF = test 4 isCNF [cnf1, cnf2, cnf3, cnf4]
+
+-- Test the invalid cases.
+testInvalidCNF :: IO()
+testInvalidCNF = test 3 (not.isCNF) [notcnf1, notcnf2, notcnf3]
+
+-- Finally we define the test function.
+-- It should return true if the output is a CNF and the input and the output
+-- are equivalent. They are equivalent if the equivalent operation <=> is a tautology.
+isCNFandEquiv :: Form -> Bool
+isCNFandEquiv f = isCNF f' && tautology (Equiv f f')  where f' = cnf f
+
+testCNF :: IO()
+testCNF = testForms 50 isCNFandEquiv
