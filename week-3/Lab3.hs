@@ -224,8 +224,12 @@ isConjOfClauses f = isClause f
 isCNF :: Form -> Bool
 isCNF f = isArrowFree f && noNegatedFunctions f && isConjOfClauses f
 
--- In order to validate the properties, first we are going to run them against the
--- the example cases in the source.
+-- In order to test the formulas, we are using the functions defined in the exercise 2
+-- This could be done using QuickCheck but due to time restrictions, it has not been
+-- possible.
+
+-- First we want tovalidate the properties running them against the examples in the
+-- reference.
 cnf1 :: Form
 cnf1 = Cnj [Neg(Prop 1), Dsj[Prop 2, Prop 3]]
 
@@ -246,10 +250,6 @@ notcnf2 = Dsj [Prop 1, Cnj [Prop 2, Prop 3]]
 
 notcnf3 :: Form
 notcnf3 = Cnj [Prop 1, Dsj[Prop 2, Cnj [Prop 3, Prop 4]]]
-
--- In order to test the formulas, we are using the functions defined in the exercise 2
--- This could be done using QuickCheck but due to time restrictions, it has not been
--- possible.
 
 -- Test the valid cases.
 testValidCNF :: IO()
