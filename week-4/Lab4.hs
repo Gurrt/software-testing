@@ -33,15 +33,25 @@ import SetOrd
 -- The Random class specifically needs a type of * while Set is of type *->*. This causes clashes in the Random class.
 -- I try to write a Wrapper as suggest on some internet fora, however I did not succeed.
 
-exercise2:: Int -> IO()
-exercise2 n = do
+min_set_length = 0 :: Int
+max_set_length = 30 :: Int
+
+min_random_value = -1000 :: Int
+max_random_value = 1000 :: Int
+
+exercise2:: IO()
+exercise2 = do
     seed  <- newStdGen
-    let rs = randomlist n seed
-    let s = list2set nub(rs) -- Removes the duplicates before converting the list to a set
-    print (show s)
+    let (int1, seed2) = randomInt seed
+    let rs = randomlist int1 seed2
+    let s = list2set rs
+    print $ (show s)
+
+randomInt :: StdGen -> (Int, StdGen)
+randomInt gen = randomR (min_set_length, max_set_length) gen
 
 randomlist :: Int -> StdGen -> [Int]
-randomlist n gen = take n (randoms gen)
+randomlist n gen = take n (randomRs (min_random_value, max_random_value) gen)
 
 -- Exercise 3
 -- unionSet is already defined in SetOrd.hs so we will only implement intersection and difference
