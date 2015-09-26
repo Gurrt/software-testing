@@ -53,6 +53,14 @@ randomInt gen = randomR (min_set_length, max_set_length) gen
 randomlist :: Int -> StdGen -> [Int]
 randomlist n gen = take n (randomRs (min_random_value, max_random_value) gen)
 
+-- Should be able to generate random list of any type
+instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
+   arbitrary = fmap list2set arbitrary
+
+-- Use this to test the above function: verboseCheck prop_setIntEqItself
+prop_setIntEqItself :: (Set Int) -> Bool
+prop_setIntEqItself a = a == a
+
 -- Exercise 3
 -- unionSet is already defined in SetOrd.hs so we will only implement intersection and difference
 
