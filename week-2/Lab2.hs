@@ -1,119 +1,53 @@
-module Lab2 where
-    import Data.Char
-    -- Data.Char is imported for isAlphaNum check in IBAN assignment
+import Data.List
+import Data.Char
+import Data.Maybe
+import Control.Monad
 
-    -- Triangle Assignment
-    -- Time taken : 40 minutes
-    data Shape = NoTriangle | Equilateral
-                | Isosceles  | Rectangular | Other deriving (Eq,Show)
+--exercise 1
 
-    isTriangle :: Integer -> Integer -> Integer -> Bool
-    isTriangle a b c = a > 0 && b > 0 && c > 0 && (a + b > c) && (a + c > b) && (b + c > a)
+--Not a triangle (Geen driehoek) if the three numbers cannot occur as the lengths of the sides of triangle,
+--Equilateral (Gelijkzijdig) if the three numbers are the lengths of the sides of an equilateral triangle,
+--Rectangular (Rechthoekig) if the three numbers are the lengths of the sides of a rectangular triangle,
+--Isosceles (Gelijkbenig) if the three numbers are the lengths of the sides of an isosceles (but not equilateral) triangle,
+--Other (Anders) if the three numbers are the lengths of the sides of a triangle that is not equilateral, not rectangular, and not isosceles.
 
-    isRectangularTriangle :: Integer -> Integer -> Integer -> Bool
-    isRectangularTriangle a b c = a*a + b*b == c*c || a*a + c*c == b*b || b*b + c*c == a*a
 
-    isEquilateralTriangle :: Integer -> Integer -> Integer -> Bool
-    isEquilateralTriangle a b c = a == b && b == c
+data Shape = NoTriangle | Equilateral | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
-    -- we define Isosceles as at LEAST two sides of the same size.
-    -- The order of the pattern matches in checkTriangle classes
-    -- three matching sides as equilateral anyway
-    isIsoscelesTriangle :: Integer -> Integer -> Integer -> Bool
-    isIsoscelesTriangle a b c = a == b || a == c || b == c
+-- Sides must be given in ascending order: triangle 1 2 3
+isTriangle :: Integer -> Integer -> Integer -> Shape
+isTriangle a b c
+    | a > 0 && b > 0 && c > 0 && a + b < c = NoTriangle
+    | a == b && b == c && a == c = Equilateral
+    | a == b && b /= c = Isosceles
+    | a^2 + b^2 == c^2 = Rectangular
+    | otherwise = Other
 
-    triangle :: Integer -> Integer -> Integer -> Shape
-    triangle a b c
-        | not (isTriangle a b c) = NoTriangle
-        | isRectangularTriangle a b c = Rectangular
-        | isEquilateralTriangle a b c = Equilateral
-        | isIsoscelesTriangle a b c = Isosceles
-        | otherwise = Other
 
-    -- Permutation Assignment
-    -- Time taken : 30 minutes
-    isPermutation :: Eq a => [a] -> [a] -> Bool
-    isPermutation xs ys = (xs /= ys) && (length xs == length ys) && all (`elem` ys) xs
+--exercise 2
 
-    -- Derangement Assignment
-    -- Time taken: 1 Hour
-    isDerangement :: [Integer] -> [Integer] -> Bool
-    isDerangement xs ys
-        | not (isPermutation xs ys) = False
-        | otherwise = recDerangementCheck xs ys
+iban :: String -> Bool
+iban s = ((read (stringCleaned s)  `mod` 97) == 1) || (specialMod97 (stringCleaned s))
 
-    recDerangementCheck :: [Integer] -> [Integer] -> Bool
-    recDerangementCheck [] (_:_) = False
-    recDerangementCheck (_:_) [] = False
-    recDerangementCheck [] [] = True
-    recDerangementCheck (x:xs) (y:ys)
-        | x == y = False
-        | otherwise = recDerangementCheck xs ys
+specialMod97 :: String -> Bool 
+specialMod97 x = (read (concat[show (read (take 9 (concat [show ((read (take 9 x)) `mod` 97) , drop 9 x])) `mod` 97), drop 16 x]) `mod` 97)== 1
 
-    deran :: Integer -> [[Integer]]
-    deran x
-        | x <= 1 = [[]]
-        | otherwise = [ perm | perm <- perms [0..x-1], isDerangement perm [0..x-1]]
+stringCleaned :: String -> String
+stringCleaned x = replaceLetters (shiftFour (removeWhite x))
 
-    -- Copied from assignment 1
-    perms :: [a] ->[[a]]
-    perms [] = [[]]
-    perms (x:xs) = concatMap (insrt x) (perms xs) where
-        insrt a [] = [[a]]
-        insrt a (b:bs) = (a:b:bs) : map (b:) (insrt a bs)
+removeWhite :: String -> String
+removeWhite x = filter (/=' ') x
 
-    -- IBAN Assignment
-    -- Time Taken:  50 minutes
+shiftFour :: String -> String
+shiftFour x = concat [drop 4 x, take 4 x]
 
-    iban :: String -> Bool
-    iban xs = calculateModulo97 (convertLetters (shiftFour (removeNonAlphaNum xs))) == 1
+replaceLetters :: String -> String
+replaceLetters [] = []
+replaceLetters (x:xs) = findLetter [toUpper x] ++ replaceLetters xs
 
-    removeNonAlphaNum :: String -> String
-    removeNonAlphaNum [] = []
-    removeNonAlphaNum (x:xs)
-        | isAlphaNum x =  x : removeNonAlphaNum xs
-        | otherwise = removeNonAlphaNum xs
+findLetter:: String -> String
+findLetter a = if (isDigit (a !!0) ) then a
+else 
+ fromJust (lookup a [("A","10"),("B","11"),("C","12"),("D","13"),("E","14"),("F","15"),("G","16"),("H","17"),("I","18"),("J","19"),("K","20"),("L","21"),("M","22"),("N","23"),("O","24"),("P","25"),("Q","26"),("R","27"),("S","28"),("T","29"),("U","30"),("V","31"),("W","32"),("X","33"),("W","34"),("Z","35")] ) 
 
-    shiftFour :: String -> String
-    shiftFour (a:b:c:d:xs) = xs ++ [a] ++ [b] ++ [c] ++ [d]
-    shiftFour _ = []
 
-    convertLetters :: String -> String
-    convertLetters [] = []
-    convertLetters (x:xs)
-        |  x == 'a' || x == 'A'  = "10" ++ convertLetters xs
-        |  x == 'b' || x == 'B'  = "11" ++ convertLetters xs
-        |  x == 'c' || x == 'C'  = "12" ++ convertLetters xs
-        |  x == 'd' || x == 'D'  = "13" ++ convertLetters xs
-        |  x == 'e' || x == 'E'  = "14" ++ convertLetters xs
-        |  x == 'f' || x == 'F' = "15" ++ convertLetters xs
-        |  x == 'g' || x == 'G'  = "16" ++ convertLetters xs
-        |  x == 'h' || x == 'H'  = "17" ++ convertLetters xs
-        |  x == 'i' || x == 'I' = "18" ++ convertLetters xs
-        |  x == 'j' || x == 'J' = "19" ++ convertLetters xs
-        |  x == 'k' || x == 'K'  = "20" ++ convertLetters xs
-        |  x == 'l' || x == 'L' = "21" ++ convertLetters xs
-        |  x == 'm' || x == 'M'  = "22" ++ convertLetters xs
-        |  x == 'n' || x == 'N'  = "23" ++ convertLetters xs
-        |  x == 'o' || x == 'O'  = "24" ++ convertLetters xs
-        |  x == 'p' || x == 'P'  = "25" ++ convertLetters xs
-        |  x == 'q' || x == 'Q'  = "26" ++ convertLetters xs
-        |  x == 'r' || x == 'R'  = "27" ++ convertLetters xs
-        |  x == 's' || x == 'S'  = "28" ++ convertLetters xs
-        |  x == 't' || x == 'T'  = "29" ++ convertLetters xs
-        |  x == 'u' || x == 'U'  = "30" ++ convertLetters xs
-        |  x == 'v' || x == 'V'  = "31" ++ convertLetters xs
-        |  x == 'w' || x == 'W'  = "32" ++ convertLetters xs
-        |  x == 'x' || x == 'X'  = "33" ++ convertLetters xs
-        |  x == 'y' || x == 'Y'  = "34" ++ convertLetters xs
-        |  x == 'z' || x == 'Z'  = "35" ++ convertLetters xs
-        | otherwise = x : convertLetters xs
-
-    calculateModulo97 :: String -> Integer
-    calculateModulo97 xs
-        | length xs > 9 = calculateModulo97 (modulo97FirstNine xs)
-        | otherwise = read xs `mod` 97
-
-    modulo97FirstNine :: String -> String
-    modulo97FirstNine [] = []
-    modulo97FirstNine xs = show (read (take 9 xs) `mod` (97 :: Integer)) ++ drop 9 xs

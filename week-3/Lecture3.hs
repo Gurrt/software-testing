@@ -1,4 +1,4 @@
-  module Lecture3
+module Lecture3
   
   where 
   
@@ -277,4 +277,3 @@
   nnf (Dsj fs) = Dsj (map nnf fs)
   nnf (Neg (Cnj fs)) = Dsj (map (nnf.Neg) fs)
   nnf (Neg (Dsj fs)) = Cnj (map (nnf.Neg) fs)
-
