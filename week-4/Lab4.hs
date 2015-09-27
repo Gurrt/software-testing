@@ -26,6 +26,17 @@ import SetOrd
    To me the two seem oddly similar.
 
    Concerning the logic in chapter 4 I have no specific questions.
+
+   [Alberto] (Time spent reading: several days in small chunks, mostly during commuting) ->
+   As Ger, my I didn't understand the example 4.5 about the Russel Paradox. It starts with
+   an acceptable assumption (most of the sets don't contain themselves) which makes sense.
+   For instance, a set of integeres only contains integers, not sets of integers. But after,
+   when supposing the opposite, I get lost in the following statements, specially in the one
+   that affirms that that is not possible to prove.
+
+   After, the section 4.2 is confusing as well. I have some background about the halt problem
+   but the whole approach (specially with the funny function) is confusing and as I wasn't even
+   able to understand what the author wants to prove, I decided to just read the section quickly. 
 -}    
 -- Exercise 2
 
@@ -137,6 +148,8 @@ removeAlreadyChecked ((x,y):xs) z
     | otherwise = (x,y) : removeAlreadyChecked xs z 
 
 -- Exercise 7
+-- Start at 20:21
+-- The first step is to define the properties use 
 
 -- Exercise 8
 {-
