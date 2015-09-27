@@ -12,10 +12,11 @@ newtype Set a = Set [a] deriving (Eq,Ord)
 instance (Show a) => Show (Set a) where
     showsPrec _ (Set s) str = showSet s str
 
+showSet :: Show a => [a] -> String -> String
 showSet []     str = showString "{}" str
 showSet (x:xs) str = showChar '{' ( shows x ( showl xs str))
-     where showl []     str = showChar '}' str
-           showl (x:xs) str = showChar ',' (shows x (showl xs str))
+     where showl []     str' = showChar '}' str'
+           showl (x':xs') str' = showChar ',' (shows x' (showl xs' str'))
 
 emptySet  :: Set a       
 emptySet = Set []
@@ -34,6 +35,7 @@ subSet (Set (x:xs)) set = (inSet x set) && subSet (Set xs) set
 insertSet :: (Ord a) => a -> Set a -> Set a 
 insertSet x (Set s) = Set (insertList x s) 
 
+insertList :: Ord a => a -> [a] -> [a]
 insertList x [] = [x]
 insertList x ys@(y:ys') = case compare x y of 
                                  GT -> y : insertList x ys' 
@@ -43,7 +45,8 @@ insertList x ys@(y:ys') = case compare x y of
 deleteSet :: Ord a => a -> Set a -> Set a 
 deleteSet x (Set s) = Set (deleteList x s)
 
-deleteList x [] = []
+deleteList :: Ord t => t -> [t] -> [t]
+deleteList _ [] = []
 deleteList x ys@(y:ys') = case compare x y of 
                                  GT -> y : deleteList x ys'
                                  EQ -> ys'
