@@ -33,11 +33,17 @@ import SetOrd
 -- The Random class specifically needs a type of * while Set is of type *->*. This causes clashes in the Random class.
 -- I try to write a Wrapper as suggest on some internet fora, however I did not succeed.
 
-min_set_length = 0 :: Int
-max_set_length = 30 :: Int
+min_set_length :: Int
+min_set_length = 0
 
-min_random_value = -1000 :: Int
-max_random_value = 1000 :: Int
+max_set_length :: Int
+max_set_length = 30
+
+min_random_value :: Int
+min_random_value = -1000
+
+max_random_value :: Int
+max_random_value = 1000
 
 exercise2:: IO()
 exercise2 = do
@@ -65,8 +71,8 @@ prop_setIntEqItself a = a == a
 -- unionSet is already defined in SetOrd.hs so we will only implement intersection and difference
 
 intersectionSet :: (Ord a) => Set a -> Set a -> Set a 
-intersectionSet (Set []) set2  =  (Set [])
-intersectionSet set1 (Set []) = (Set [])
+intersectionSet (Set []) _  =  (Set [])
+intersectionSet _ (Set []) = (Set [])
 intersectionSet (Set (x:xs)) set2
     | inSet x set2 = insertSet x (intersectionSet (Set xs) set2)
     | otherwise = intersectionSet (Set xs) set2
@@ -125,7 +131,7 @@ generateTransClosures x y z
 
 -- Makes sure we do not get stuck in an infinite loop
 removeAlreadyChecked :: Ord a => Rel a -> Rel a -> Rel a
-removeAlreadyChecked [] z = []
+removeAlreadyChecked [] _ = []
 removeAlreadyChecked ((x,y):xs) z
     | elem (x,y) z = removeAlreadyChecked xs z
     | otherwise = (x,y) : removeAlreadyChecked xs z 
