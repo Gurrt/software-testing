@@ -37,7 +37,9 @@ import SetOrd
    After, the section 4.2 is confusing as well. I have some background about the halt problem
    but the whole approach (specially with the funny function) is confusing and as I wasn't even
    able to understand what the author wants to prove, I decided to just read the section quickly. 
--}    
+-}  
+
+
 -- Exercise 2
 
 -- Using the Random class from the Haskell library does not apply to our type Set a.
@@ -78,9 +80,10 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
 prop_setIntEqItself :: (Set Int) -> Bool
 prop_setIntEqItself a = a == a
 
--- Exercise 3
--- unionSet is already defined in SetOrd.hs so we will only implement intersection and difference
 
+-- Exercise 3
+
+-- unionSet is already defined in SetOrd.hs so we will only implement intersection and difference
 intersectionSet :: (Ord a) => Set a -> Set a -> Set a 
 intersectionSet (Set []) _  =  (Set [])
 intersectionSet _ (Set []) = (Set [])
@@ -95,6 +98,7 @@ differenceSet (Set (x:xs)) set2
     | not $ inSet x set2 = insertSet x (differenceSet (Set xs) set2)
     | otherwise = differenceSet (Set xs) (deleteSet x set2)
 
+
 -- Exercise 4
 {-
     Questions :
@@ -102,6 +106,7 @@ differenceSet (Set (x:xs)) set2
         introduces a lot of concepts which are fragmented throughout, perhaps a summary of concepts introduced in
         the chapter would be in order.
 -}
+
 
 -- Exercise 5
 -- Time spent : 30 minutes
@@ -115,9 +120,9 @@ generateSymClosures :: Ord a => Rel a -> Rel a
 generateSymClosures [] = []
 generateSymClosures ((x,y):xs) = [(x,y)] ++ [(y,x)] ++ generateSymClosures xs 
 
+
 -- Exercise 6
 -- Time spent : 1 hour
-
 infixr 5 @@
  
 (@@) :: Eq a => Rel a -> Rel a -> Rel a
@@ -128,6 +133,7 @@ trClos :: Ord a => Rel a -> Rel a
 trClos x = nub $ trClos' x
 
 trClos' :: Ord a => Rel a -> Rel a
+trClos' [] = []
 trClos' [(x,y)] = [(x,y)]
 trClos' ((x,y):xs) = [(x,y)] ++ generateTransClosures [(x,y)] xs [] ++ trClos' xs
 
@@ -147,13 +153,37 @@ removeAlreadyChecked ((x,y):xs) z
     | elem (x,y) z = removeAlreadyChecked xs z
     | otherwise = (x,y) : removeAlreadyChecked xs z 
 
+
 -- Exercise 7
 -- Start at 20:21
--- The first step is to define the properties use 
+
+-- The first step is to define the properties that those relations hold.
+-- Starting with the symmetric relation, based on the following definition:
+-- (definition extracted from Wikipedia)
+--
+--  S = R u {(x,y):(y,x) € R)
+-- 
+-- We can state that:
+--  1. S size must be smaller or equal than twice R.
+--  2. For each element of S must exist other element in S that is symmetric.
+
+-- First property: S must be smaller or equal than twice R.
+-- In case R does not contains any symmetric relation, size S == 2 * size R.
+-- In case R only contains symmetric relations, size S == size R
+symSizeProp :: Rel a -> Rel a -> Bool
+symSizeProp r s = length s <= 2 * length r
+
+-- Second property: Foreach element in R must be one symmetric in S and itself.
+symSymProp :: Ord a => Rel a -> Rel a -> Bool
+symSymProp [] [] = True    -- In case R == S
+symSymProp [] _  = True    -- Normal base case.
+symSymProp _  [] = False   -- In case the size R > size S
+symSymProp ((x,y):rs) s = elem (x,y) s && elem (y,x) s && (symSymProp rs s)
 
 -- Exercise 8
 {-
  As example we can use the basic relation from exercise 5 and 6.
+
  GHCI Code :
  *Lab4> symClos $ trClos [(1,2),(2,3),(3,4)]
  [(1,2),(2,1),(1,3),(3,1),(1,4),(4,1),(2,3),(3,2),(2,4),(4,2),(3,4),(4,3)]
