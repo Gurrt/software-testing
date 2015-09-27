@@ -190,6 +190,10 @@ symOrdProp ((x,y):(x',y'):ss)
   | x == x' && y <= y' = True && symOrdProp ((x',y'):ss)
   | otherwise = False
 
+
+testSymClos :: Ord a => Rel a -> Bool
+testSymClos r = let s = symClos r in symOrdProp s && symSizeProp r s && symSymProp r s
+
 -- Exercise 8
 {-
  As example we can use the basic relation from exercise 5 and 6.
