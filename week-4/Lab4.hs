@@ -105,6 +105,12 @@ differenceSet (Set (x:xs)) set2
     [Ger] (Time spent reading: 2 hours) -> The entire chapter was very mathsy, making it long and unintersting to read. Furthermore the chapter
         introduces a lot of concepts which are fragmented throughout, perhaps a summary of concepts introduced in
         the chapter would be in order.
+
+    [Alberto] (Time spent reading: several days in small chunks, mostly during commuting) ->
+    In several of the examples (specially at around page 175 because I had to check them often
+    in order to do the other exercises), the the topic covered are relations and although the
+    definition of the functions refer to Rel, the implementation use Set. Is this a mistake?
+
 -}
 
 
@@ -218,6 +224,48 @@ instance (Num a, Ord a, Arbitrary a) => Arbitrary (Rel a) where
 testSymClos :: Ord a => Rel a -> Bool
 testSymClos r = let s = symClos r in symOrdProp s && symSizeProp r s && symSymProp r s
 
+-- For the transitive relation, we apply the same idea
+-- 1. R is contained in R+
+-- 2. R+ is ordered.
+-- 3. R+ is transitive.
+-- 4. R+ is the minimal union of R^i
+
+-- First property: To check that the elements of R are contained in R+ is almost
+-- trivial.
+trContainsProp :: Ord a => Rel a -> Rel a -> Bool
+trContainsProp r rp = all (\x -> x `elem` rp) r
+
+-- Second property: This is not a real property of the transitive closure, but
+-- the description says that the relation is ordered. Therefore, we will reuse
+-- the same implementation used with the symmetric closure.
+trOrdProp :: Ord a => Rel a -> Bool
+trOrdProp = symOrdProp 
+
+-- Third property: In order to test this property we will just follow the
+-- guidelines in the pages 175 and 177 of the book to check the transitivity.
+trTransProp :: Ord a => Rel a -> Bool
+trTransProp [] = True
+trTransProp rp = and [trans pair rp | pair <- rp] where 
+  trans (x,y) rp' = 
+    and [(x,v) `elem` rp' | (u,v) <- rp', u == y ]
+
+-- To check the last property is not viable due to the combinatorial explosion
+-- that can be generated when trying to check for every element of R+ in which
+-- R^i it is placed (in relations big enough it can grow really big with a high 
+-- i value, in addition to be difficult to decide when to stop checking new 
+-- iterations). It would be a hard test on the software because it will
+-- secure not only the property but also if it is complete. As we learnt during 
+-- week 2 testing the dearrangements, it is not viable to do it and other
+-- properties (like property number 3) should be tested instead.
+
+-- Test function for the transitive closures. In order to supress the warning,
+-- Integer can be used insted of a. In order to define the most general test
+-- possible, the anonymous type has been preserved.
+--
+-- Run using:
+--   quickCheck testTrClos
+testTrClos :: Ord a => Rel a -> Bool
+testTrClos r = let rp = trClos r in trContainsProp r rp && trOrdProp rp && trTransProp rp
 
 
 -- Exercise 8
