@@ -68,7 +68,10 @@ executable week-4
     hs-source-dirs: week-4
     main-is: Lab4.hs 
     default-extensions: ExistentialQuantification,
-                        OverloadedStrings
+                        OverloadedStrings,
+                        ParallelListComp,
+                        TypeSynonymInstances,
+                        FlexibleInstances
     build-depends: base,
                    QuickCheck,
                    random

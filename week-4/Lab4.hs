@@ -114,7 +114,7 @@ differenceSet (Set (x:xs)) set2
 type Rel a = [(a,a)]
 
 symClos :: Ord a => Rel a -> Rel a
-symClos x = nub $ generateSymClosures x
+symClos x = sort $ nub $ generateSymClosures x
 
 generateSymClosures :: Ord a => Rel a -> Rel a
 generateSymClosures [] = []
@@ -130,7 +130,7 @@ r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
 
 -- Wrapper function since recursive nature of trClos' does not prevent duplicates
 trClos :: Ord a => Rel a -> Rel a
-trClos x = nub $ trClos' x
+trClos x = sort $ nub $ trClos' x
 
 trClos' :: Ord a => Rel a -> Rel a
 trClos' [] = []
@@ -155,11 +155,11 @@ removeAlreadyChecked ((x,y):xs) z
 
 
 -- Exercise 7
--- Start at 20:21
+-- Time spent: 6 hours
 
 -- The first step is to define the properties that those relations hold.
 -- Starting with the symmetric relation, based on the following definition:
--- (definition extracted from Wikipedia)
+-- (definition from Wikipedia: https://en.wikipedia.org/wiki/Symmetric_closure)
 --
 --  S = R u {(x,y):(y,x) € R)
 -- 
@@ -191,6 +191,27 @@ symOrdProp ((x,y):(x',y'):ss)
   | otherwise = False
 
 
+-- This one is specially tricky. Uncountable hours have been spent just
+-- generating proper relation. The first issue to address is to generate a pair
+-- of arbitrary elements. The only way to address this issue is generating two
+-- elements independently and then using and if-then-else reordering them. After
+-- generating a pair, we create a list based on this pair. 
+--
+-- As the only constraint for the Relations is to be Ord a, QuickCheck by
+-- default will use empty pairs ((),()) (this can be checked running
+-- `verboseCheck testSymClos` after commenting the following lines). Therefore,
+-- I added the type Num to the definition to force QuickCheck to use meaningful
+-- data.
+instance (Num a, Ord a, Arbitrary a) => Arbitrary (Rel a) where
+  arbitrary = listOf $ do
+    x <- arbitrary
+    y <- arbitrary
+    if x < y then return (x,y)
+      else return (y,x)
+        
+-- Test function for the symmetric closures.
+-- Run using:
+--   quickCheck testSymClos
 testSymClos :: Ord a => Rel a -> Bool
 testSymClos r = let s = symClos r in symOrdProp s && symSizeProp r s && symSymProp r s
 
