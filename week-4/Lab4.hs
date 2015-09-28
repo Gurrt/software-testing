@@ -209,11 +209,16 @@ instance (Num a, Ord a, Arbitrary a) => Arbitrary (Rel a) where
     if x < y then return (x,y)
       else return (y,x)
         
--- Test function for the symmetric closures.
+-- Test function for the symmetric closures. In order to supress the warning,
+-- Integer can be used insted of a. In order to define the most general test
+-- possible, the anonymous type has been preserved.
+--
 -- Run using:
 --   quickCheck testSymClos
 testSymClos :: Ord a => Rel a -> Bool
 testSymClos r = let s = symClos r in symOrdProp s && symSizeProp r s && symSymProp r s
+
+
 
 -- Exercise 8
 {-
