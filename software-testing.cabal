@@ -2,8 +2,11 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                software-testing
-version:             0.1.0.0
-synopsis:            Exercises and project of the course "Software Testing" from the MSc Software Engineering at UvA.
+version:             0.5.0.0
+category:            Testing
+maintainer:          Alberto Martinez de Murga
+synopsis:            Project repository.
+description:         Exercises and project of the course "Software Testing" from the MSc Software Engineering at UvA.
 -- description:
 homepage:            https://github.com/Gurrt/software-testing
 license:             MIT
@@ -14,6 +17,10 @@ license-file:        LICENSE
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
+
+source-repository head
+  type: git 
+  location: https://github.com/Gurrt/software-testing/
 
 library
   -- exposed-modules:
@@ -28,7 +35,8 @@ library
 executable week-1-ex-1
     ghc-options: -Wall
     hs-source-dirs: week-1
-    main-is: HW01Tests.hs
+    main-is: HW01Tests.hs 
+    default-language: Haskell2010
     default-extensions: ExistentialQuantification,
                         OverloadedStrings
     build-depends: base,
@@ -38,6 +46,7 @@ executable week-1-ex-2
    ghc-options: -Wall
    hs-source-dirs: week-1
    main-is: CSI.hs
+   default-language: Haskell2010
    default-extensions: ExistentialQuantification,
                        OverloadedStrings
    build-depends: base,
@@ -46,7 +55,8 @@ executable week-1-ex-2
 executable week-2
     ghc-options: -Wall
     hs-source-dirs: week-2
-    main-is: Lab2Tests.hs
+    main-is: Lab2Tests.hs 
+    default-language: Haskell2010    
     default-extensions: ExistentialQuantification,
                         OverloadedStrings
     build-depends: base,
@@ -56,7 +66,8 @@ executable week-2
 executable week-3
     ghc-options: -Wall
     hs-source-dirs: week-3
-    main-is: Lab3.hs
+    main-is: Lab3.hs 
+    default-language: Haskell2010    
     default-extensions: ExistentialQuantification,
                         OverloadedStrings
     build-depends: base,
@@ -67,6 +78,7 @@ executable week-4
     ghc-options: -Wall
     hs-source-dirs: week-4
     main-is: Lab4.hs 
+    default-language: Haskell2010    
     default-extensions: ExistentialQuantification,
                         OverloadedStrings,
                         ParallelListComp,
@@ -74,4 +86,14 @@ executable week-4
                         FlexibleInstances
     build-depends: base,
                    QuickCheck,
+                   random
+
+executable week-5
+    ghc-options: -Wall
+    hs-source-dirs: week-5
+    main-is: Lab5.hs  
+    default-language: Haskell2010
+    default-extensions: ExistentialQuantification,
+                        OverloadedStrings
+    build-depends: base,
                    random
