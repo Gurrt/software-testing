@@ -57,7 +57,7 @@
   grid2sud gr = \ (r,c) -> pos gr (r,c) 
     where 
     pos :: [[a]] -> (Row,Column) -> a 
-    pos gr (r,c) = (gr !! (r-1)) !! (c-1)
+    pos gr' (r,c) = (gr' !! (r-1)) !! (c-1)
 
   showSudoku :: Sudoku -> IO()
   showSudoku = showGrid . sud2grid
@@ -70,7 +70,7 @@
     [ s (r',c') | r' <- bl r, c' <- bl c ]
 
   freeInSeq :: [Value] -> [Value]
-  freeInSeq seq = values \\ seq 
+  freeInSeq seq' = values \\ seq' 
 
   freeInRow :: Sudoku -> Row -> [Value]
   freeInRow s r = 
@@ -130,10 +130,10 @@
   solved = null . snd
 
   extendNode :: Node -> Constraint -> [Node]
-  extendNode (s,constraints) (r,c,vs) = 
+  extendNode (s,constraints') (r,c,vs) = 
      [(extend s ((r,c),v),
        sortBy length3rd $ 
-           prune (r,c,v) constraints) | v <- vs ]
+           prune (r,c,v) constraints') | v <- vs ]
 
   length3rd :: (a,b,[c]) -> (a,b,[c]) -> Ordering
   length3rd (_,_,zs) (_,_,zs') = compare (length zs) (length zs')
@@ -168,7 +168,9 @@
 
   data Tree a = T a [Tree a] deriving (Eq,Ord,Show)
 
+  exmple1 :: Tree Integer
   exmple1 = T 1 [T 2 [], T 3 []]
+  exmple2 :: Tree Integer
   exmple2 = T 0 [exmple1,exmple1,exmple1]
 
   grow :: (node -> [node]) -> node -> Tree node 
@@ -291,25 +293,25 @@
 
   rsearch :: (node -> IO [node]) 
               -> (node -> Bool) -> IO [node] -> IO [node]
-  rsearch succ goal ionodes = 
+  rsearch succ' goal ionodes = 
     do xs <- ionodes 
        if null xs 
          then return []
          else 
            if goal (head xs) 
              then return [head xs]
-             else do ys <- rsearch succ goal (succ (head xs))
+             else do ys <- rsearch succ' goal (succ' (head xs))
                      if (not . null) ys 
                         then return [head ys]
                         else if null (tail xs) then return []
                              else 
                                rsearch 
-                                 succ goal (return $ tail xs)
+                                 succ' goal (return $ tail xs)
 
   genRandomSudoku :: IO Node
   genRandomSudoku = do [r] <- rsolveNs [emptyN]
                        return r
-
+  randomS :: IO()
   randomS = genRandomSudoku >>= showNode
 
   uniqueSol :: Node -> Bool
