@@ -8,7 +8,8 @@ import qualified Exercise2 as E2
 
 -- Exercise 1
 
-nrcGrid :: L.Grid
+--Grid definitions are the same in all files but for the sake of compatibility E1 is used.
+nrcGrid :: E1.Grid
 nrcGrid = [[0,0,0,3,0,0,0,0,0],
            [0,0,0,7,0,0,3,0,0],
            [2,0,0,0,0,0,0,0,8],
