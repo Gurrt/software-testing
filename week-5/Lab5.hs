@@ -35,7 +35,7 @@ showNrcGrid [as,bs,cs,ds,es,fs,gs,hs,is] =
        putStrLn (nrcSubGridLine)
        showNrcSubGridRow fs;
        putStrLn (nrcGridLine)
-       showNrcSubGridRow gs; showNormalRow hs
+       showNrcSubGridRow gs; showNrcSubGridRow hs
        putStrLn (nrcSubGridLine)
        showNormalRow is;
        putStrLn (nrcGridLine)
