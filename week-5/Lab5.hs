@@ -89,7 +89,9 @@ solveGridE2 = E2.solveAndShow nrcGrid
 
 -- The freeAtPos function is also used in generating sudoku answers so speed differences should show up there too.
 -- Uses seq to force evaluation of solveEmpty eventhough we're not doing anything with it, which is what we want in the case of testing efficiency.
--- Warning using this with 100 could take a few minutes, but it also normalizes the outliers a bit
+-- The random algorithm used to solve the empty sudoku has wildly varying execution times, due to the whole IO monad I could not get a 100 time
+-- Solving of the same Sudoku to work. This means that the results from this test are absolutely worthless, because they vary so much that we cannot
+-- say anything meaningful about the difference in execution time.
 compareRefactoredToNormal = do
     start <- getCPUTime
     1 `seq` solveManyEmpty 100
