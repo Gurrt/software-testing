@@ -149,3 +149,9 @@ compareE1VsE2 = do
 -- Exercise 4
 
 -- Exercise 5
+-- By adding the constraints in the freeAtPos in ex1 the automatic generator automatically takes the new NRC constraint into account
+-- Time taken programming : 0 hours (More than ex2)
+-- Time taken to figure this out : Longer than I'll admit.
+
+generateRandomNRCGrid :: IO ()
+generateRandomNRCGrid = E1.main
