@@ -20,10 +20,15 @@
   rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
   columnConstrnt:: Constrnt
   columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
+
+  blockConstrntBuilder::[[Int]] -> Constrnt
+  blockConstrntBuilder blx = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blx, b2 <- blx ]
+
   blockConstrnt:: Constrnt
-  blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
+  blockConstrnt = blockConstrntBuilder blocks
+
   nrcBlockConstrnt:: Constrnt
-  nrcBlockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- nrcBlocks, b2 <- nrcBlocks ]
+  nrcBlockConstrnt = blockConstrntBuilder nrcBlocks
 
   blocks :: [[Int]]
   blocks = [[1..3],[4..6],[7..9]]
@@ -34,31 +39,55 @@
   showVal 0 = " "
   showVal d = show d
 
-  showRow :: [Value] -> IO()
-  showRow [a1,a2,a3,a4,a5,a6,a7,a8,a9] =
-   do  putChar '|'         ; putChar ' '
-       putStr (showVal a1) ; putChar ' '
-       putStr (showVal a2) ; putChar ' '
-       putStr (showVal a3) ; putChar ' '
-       putChar '|'         ; putChar ' '
-       putStr (showVal a4) ; putChar ' '
-       putStr (showVal a5) ; putChar ' '
-       putStr (showVal a6) ; putChar ' '
-       putChar '|'         ; putChar ' '
-       putStr (showVal a7) ; putChar ' '
-       putStr (showVal a8) ; putChar ' '
-       putStr (showVal a9) ; putChar ' '
-       putChar '|'         ; putChar '\n'
+  nrcGridLine :: String
+  nrcGridLine = "+---------+-----------+---------+"
 
-  showGrid :: Grid -> IO()
+  nrcSubGridLine:: String
+  nrcSubGridLine = "|   +-----|---+   +---|-----+   |"
+
+  showGrid:: Grid -> IO()
   showGrid [as,bs,cs,ds,es,fs,gs,hs,is] =
-   do putStrLn ("+-------+-------+-------+")
-      showRow as; showRow bs; showRow cs
-      putStrLn ("+-------+-------+-------+")
-      showRow ds; showRow es; showRow fs
-      putStrLn ("+-------+-------+-------+")
-      showRow gs; showRow hs; showRow is
-      putStrLn ("+-------+-------+-------+")
+      do putStrLn (nrcGridLine)
+         showNormalRow as;
+         putStrLn (nrcSubGridLine)
+         showNrcSubGridRow bs; showNrcSubGridRow cs
+         putStrLn (nrcGridLine)
+         showNrcSubGridRow ds;
+         putStrLn (nrcSubGridLine)
+         showNormalRow es;
+         putStrLn (nrcSubGridLine)
+         showNrcSubGridRow fs;
+         putStrLn (nrcGridLine)
+         showNrcSubGridRow gs; showNrcSubGridRow hs
+         putStrLn (nrcSubGridLine)
+         showNormalRow is;
+         putStrLn (nrcGridLine)
+
+  showNrcSubGridRow:: [Value] -> IO()
+  showNrcSubGridRow vs = showNrcRow '|' vs
+
+  showNormalRow:: [Value] -> IO()
+  showNormalRow vs = showNrcRow ' ' vs
+
+  showNrcRow :: Char -> [Value] -> IO()
+  showNrcRow ch [a1,a2,a3,a4,a5,a6,a7,a8,a9] =
+      do  putChar '|'         ; putChar ' '
+          putStr (showVal a1) ; putChar ' '
+          putChar ch          ; putChar ' '
+          putStr (showVal a2) ; putChar ' '
+          putStr (showVal a3) ; putChar ' '
+          putChar '|'         ; putChar ' '
+          putStr (showVal a4) ; putChar ' '
+          putChar ch          ; putChar ' '
+          putStr (showVal a5) ; putChar ' '
+          putChar ch          ; putChar ' '
+          putStr (showVal a6) ; putChar ' '
+          putChar '|'         ; putChar ' '
+          putStr (showVal a7) ; putChar ' '
+          putStr (showVal a8) ; putChar ' '
+          putChar ch          ; putChar ' '
+          putStr (showVal a9) ; putChar ' '
+          putChar '|'         ; putChar '\n'
 
   type Sudoku = Position -> Value
 
