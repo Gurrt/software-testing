@@ -189,7 +189,7 @@ solveEmptyRefac = E2.rsolveNs [E2.emptyN]
 
 -- Exercise 5
 -- By adding the constraints in the freeAtPos in ex1 the automatic generator automatically takes the new NRC constraint into account
--- Time taken programming : 0 hours (More than ex2)
+-- Time taken programming : 0 hours (More than ex1)
 -- Time taken to figure this out : Longer than I'll admit.
 
 generateRandomNRCGrid :: IO ()
