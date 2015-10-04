@@ -187,8 +187,6 @@ solveEmpty = E1.rsolveNs [E1.emptyN]
 
 solveEmptyRefac :: IO [E2.Node]
 solveEmptyRefac = E2.rsolveNs [E2.emptyN]
-    
->>>>>>> ger
 
 -- Exercise 3
 
