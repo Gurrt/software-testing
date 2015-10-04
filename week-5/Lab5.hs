@@ -2,6 +2,12 @@ module Lab5 where
 
 import Data.List
 import System.Random
+import Control.Exception
+import Text.Printf
+import Control.Exception
+import System.CPUTime
+
+
 import qualified Lecture5 as L
 import qualified Exercise1 as E1
 import qualified Exercise2 as E2
@@ -21,8 +27,8 @@ nrcGrid = [[0,0,0,3,0,0,0,0,0],
            [0,8,0,0,4,0,0,0,0],
            [0,0,2,0,0,0,0,0,0]]
 
-showNrcGrid:: IO()
-showNrcGrid = E1.showGrid nrcGrid
+showGridE1:: IO()
+showGridE1 = E1.showGrid nrcGrid
 
 -- "E1.showGrid nrcGrid" produces the output below:
 -- +---------+----------+----------+
@@ -42,8 +48,8 @@ showNrcGrid = E1.showGrid nrcGrid
 -- |   +-----|---+   +---|-----+   |
 -- |       2 |           |         |
 -- +---------+----------+----------+
-solveNrcGrid:: IO [()]
-solveNrcGrid = E1.solveAndShow nrcGrid
+solveGridE1:: IO [()]
+solveGridE1 = E1.solveAndShow nrcGrid
 
 -- "E1.solveAndShow nrcGrid" produces the output below:
 -- +---------+----------+----------+
@@ -83,6 +89,60 @@ showGridE2 = E2.showGrid nrcGrid
 
 solveGridE2:: IO [()]
 solveGridE2 = E2.solveAndShow nrcGrid
+
+compareE1VsE2:: IO ()
+compareE1VsE2 = do
+                    start1 <- getCPUTime
+                    solveGridE1
+                    end1   <- getCPUTime
+                    let diff1 = (fromIntegral (end1 - start1)) / (10^9)
+                    printf "Computation time: %0.3f millisec\n" (diff1 :: Double)
+                    start2 <- getCPUTime
+                    solveGridE2
+                    end2   <- getCPUTime
+                    let diff2 = (fromIntegral (end2 - start2)) / (10^9)
+                    printf "Computation time: %0.3f millisec\n" (diff2 :: Double)
+                    printf "Computation time difference: %0.3f millisec\n" (diff1 - diff2 :: Double)
+
+-- Unfortunately haskell does some funky caching resulting resulting in different results. However results do not differ
+-- accross several runs.
+-- +---------+----------+----------+
+-- | 4   7 8 | 3   9   2 | 6 1   5 |
+-- |   +-----|---+   +---|-----+   |
+-- | 6 | 1 9 | 7 | 5 | 8 | 3 2 | 4 |
+-- | 2 | 3 5 | 4 | 1 | 6 | 9 7 | 8 |
+-- +---------+----------+----------+
+-- | 7 | 2 6 | 8 | 3 | 5 | 1 4 | 9 |
+-- |   +-----|---+   +---|-----+   |
+-- | 8   9 1 | 6   2   4 | 7 5   3 |
+-- |   +-----|---+   +---|-----+   |
+-- | 3 | 5 4 | 9 | 7 | 1 | 2 8 | 6 |
+-- +---------+----------+----------+
+-- | 5 | 6 7 | 2 | 8 | 9 | 4 3 | 1 |
+-- | 9 | 8 3 | 1 | 4 | 7 | 5 6 | 2 |
+-- |   +-----|---+   +---|-----+   |
+-- | 1   4 2 | 5   6   3 | 8 9   7 |
+-- +---------+----------+----------+
+-- Computation time: 31.250 millisec
+-- +---------+-----------+---------+
+-- | 4   7 8 | 3   9   2 | 6 1   5 |
+-- |   +-----|---+   +---|-----+   |
+-- | 6 | 1 9 | 7 | 5 | 8 | 3 2 | 4 |
+-- | 2 | 3 5 | 4 | 1 | 6 | 9 7 | 8 |
+-- +---------+-----------+---------+
+-- | 7 | 2 6 | 8 | 3 | 5 | 1 4 | 9 |
+-- |   +-----|---+   +---|-----+   |
+-- | 8   9 1 | 6   2   4 | 7 5   3 |
+-- |   +-----|---+   +---|-----+   |
+-- | 3 | 5 4 | 9 | 7 | 1 | 2 8 | 6 |
+-- +---------+-----------+---------+
+-- | 5 | 6 7 | 2 | 8 | 9 | 4 3 | 1 |
+-- | 9 | 8 3 | 1 | 4 | 7 | 5 6 | 2 |
+-- |   +-----|---+   +---|-----+   |
+-- | 1   4 2 | 5   6   3 | 8 9   7 |
+-- +---------+-----------+---------+
+-- Computation time: 46.875 millisec
+-- Computation time difference: -15.625 millisec
 
 -- Exercise 3
 

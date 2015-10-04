@@ -96,4 +96,7 @@ executable week-5
     default-extensions: ExistentialQuantification,
                         OverloadedStrings
     build-depends: base,
-                   random
+                   random,
+                   clock,
+                   QuickCheck,
+                   formatting
