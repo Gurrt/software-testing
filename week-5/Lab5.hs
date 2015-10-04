@@ -1,13 +1,18 @@
 module Lab5 where
 
 import Data.List
+import System.CPUTime
 import System.Random
+<<<<<<< HEAD
 import Control.Exception
 import Text.Printf
 import Control.Exception
 import System.CPUTime
 
 
+=======
+import Text.Printf
+>>>>>>> ger
 import qualified Lecture5 as L
 import qualified Exercise1 as E1
 import qualified Exercise2 as E2
@@ -83,6 +88,7 @@ solveGridE1 = E1.solveAndShow nrcGrid
 -- certain functions do, due to increased readability after proposed refactor.
 -- It should be possible to improve the code even further. However a choice was made to go with the solutions that solved
 -- the nrcGrid sudoku and improve upon the code if time would allow us to do so.
+-- Note: Even though, it isn't explicitly mentioned that we should, we also included the NRC constraint in this code.
 
 showGridE2:: IO()
 showGridE2 = E2.showGrid nrcGrid
@@ -90,6 +96,8 @@ showGridE2 = E2.showGrid nrcGrid
 solveGridE2:: IO [()]
 solveGridE2 = E2.solveAndShow nrcGrid
 
+-- This function compares the two functions once, hardly a statistic proof of difference but more stable in execution time than
+-- the compareRefactoredToNormal implementation.
 compareE1VsE2:: IO ()
 compareE1VsE2 = do
                     start1 <- getCPUTime
@@ -105,7 +113,7 @@ compareE1VsE2 = do
                     printf "Computation time difference: %0.3f millisec\n" (diff1 - diff2 :: Double)
 
 -- Unfortunately haskell does some funky caching resulting resulting in different results. However results do not differ
--- accross several runs.
+-- accross several manual runs.
 -- +---------+----------+----------+
 -- | 4   7 8 | 3   9   2 | 6 1   5 |
 -- |   +-----|---+   +---|-----+   |
@@ -143,6 +151,44 @@ compareE1VsE2 = do
 -- +---------+-----------+---------+
 -- Computation time: 46.875 millisec
 -- Computation time difference: -15.625 millisec
+
+-- Uses seq to force evaluation of solveEmpty event hough we're not doing anything with it, which is what we want in the case of testing efficiency.
+-- The freeAtPos function is also used in generating sudoku answers so speed differences should show up here too, however
+-- the random algorithm used to solve the empty sudoku has wildly varying execution times. This means that the results from this test are absolutely worthless,
+-- because they vary so much that we cannot say anything meaningful about the difference in execution time. Due to the whole IO monad I could not get a 100 time
+-- solving of the same Sudoku to work, so this is the best we could come up with with regards to 'random' testing.
+compareRefactoredToNormal = do
+    start <- getCPUTime
+    1 `seq` solveManyEmpty 100
+    end <- getCPUTime
+    let diff = (fromIntegral (end - start)) / (10^12)
+    printf "100 Normal Generations Took: %0.3f sec\n" (diff :: Double)
+    start2 <- getCPUTime   
+    1 `seq` solveManyEmptyRefac 100
+    end2 <- getCPUTime
+    let diff2 = (fromIntegral (end2- start2)) / (10^12)
+    printf "100 Refactored Generations Took: %0.3f sec\n" (diff2 :: Double)
+    
+-- getRandomInt is purely here so we can return something
+solveManyEmpty :: Int -> IO Int
+solveManyEmpty 0 = L.getRandomInt 0
+solveManyEmpty x = do 
+    y <- 1 `seq` solveEmpty     
+    solveManyEmpty (x-1)
+
+solveManyEmptyRefac :: Int -> IO Int
+solveManyEmptyRefac 0 = L.getRandomInt 0
+solveManyEmptyRefac x = do 
+    1 `seq` solveEmptyRefac     
+    solveManyEmptyRefac (x-1)
+    
+solveEmpty :: IO [E1.Node]
+solveEmpty = E1.rsolveNs [E1.emptyN]
+
+solveEmptyRefac :: IO [E2.Node]
+solveEmptyRefac = E2.rsolveNs [E2.emptyN]
+    
+>>>>>>> ger
 
 -- Exercise 3
 
