@@ -64,6 +64,12 @@ solveNrcGrid = E1.solveAndShow nrcGrid
 
 -- Exercise 2
 
+showGridE2:: IO()
+showGridE2 = E2.showGrid nrcGrid
+
+solveGridE2:: IO [()]
+solveGridE2 = E2.solveAndShow nrcGrid
+
 -- Exercise 3
 
 -- Exercise 4
