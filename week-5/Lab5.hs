@@ -1,10 +1,7 @@
 module Lab5 where
 
 import Data.List
-import System.CPUTime
 import System.Random
-import Control.Exception
-import Text.Printf
 import Control.Exception
 import System.CPUTime
 import Text.Printf
@@ -98,12 +95,12 @@ compareE1VsE2 = do
                     start1 <- getCPUTime
                     solveGridE1
                     end1   <- getCPUTime
-                    let diff1 = (fromIntegral (end1 - start1)) / (10^9)
+                    let diff1 = fromIntegral (end1 - start1) / (10^9)
                     printf "Computation time: %0.3f millisec\n" (diff1 :: Double)
                     start2 <- getCPUTime
                     solveGridE2
                     end2   <- getCPUTime
-                    let diff2 = (fromIntegral (end2 - start2)) / (10^9)
+                    let diff2 = fromIntegral (end2 - start2) / (10^9)
                     printf "Computation time: %0.3f millisec\n" (diff2 :: Double)
                     printf "Computation time difference: %0.3f millisec\n" (diff1 - diff2 :: Double)
 
@@ -156,27 +153,27 @@ compareRefactoredToNormal = do
     start <- getCPUTime
     1 `seq` solveManyEmpty 100
     end <- getCPUTime
-    let diff = (fromIntegral (end - start)) / (10^12)
+    let diff = fromIntegral (end - start) / (10^12)
     printf "100 Normal Generations Took: %0.3f sec\n" (diff :: Double)
-    start2 <- getCPUTime   
+    start2 <- getCPUTime
     1 `seq` solveManyEmptyRefac 100
     end2 <- getCPUTime
-    let diff2 = (fromIntegral (end2- start2)) / (10^12)
+    let diff2 = fromIntegral (end2- start2) / (10^12)
     printf "100 Refactored Generations Took: %0.3f sec\n" (diff2 :: Double)
-    
+
 -- getRandomInt is purely here so we can return something
 solveManyEmpty :: Int -> IO Int
 solveManyEmpty 0 = L.getRandomInt 0
-solveManyEmpty x = do 
-    y <- 1 `seq` solveEmpty     
+solveManyEmpty x = do
+    y <- 1 `seq` solveEmpty
     solveManyEmpty (x-1)
 
 solveManyEmptyRefac :: Int -> IO Int
 solveManyEmptyRefac 0 = L.getRandomInt 0
-solveManyEmptyRefac x = do 
-    1 `seq` solveEmptyRefac     
+solveManyEmptyRefac x = do
+    1 `seq` solveEmptyRefac
     solveManyEmptyRefac (x-1)
-    
+
 solveEmpty :: IO [E1.Node]
 solveEmpty = E1.rsolveNs [E1.emptyN]
 
@@ -184,6 +181,139 @@ solveEmptyRefac :: IO [E2.Node]
 solveEmptyRefac = E2.rsolveNs [E2.emptyN]
 
 -- Exercise 3
+-- Time spent: 5 hours. Monads are really time consuming.
+
+-- A sudoku problem is minimal if
+-- 1) it admits a unique solution
+-- 2) every other sudoku substracting one value accept more than one solution.
+-- We can split this problem into checking both conditions independetly.
+
+-- The first thing we have to do is to generate all possible solutions. For that
+-- instead of using a DFS search, we use a BFS search in order to get all possible
+-- solutions for the given tree. We will use this search for all the properties
+-- in this exercise.
+bfsSearch :: (node -> [node]) -> (node -> Bool) -> [node] -> [node]
+bfsSearch _ _ [] = []
+bfsSearch children goal (x:xs)
+  | goal x    = x : bfsSearch children goal xs
+  | otherwise = bfsSearch children goal (xs ++ children x)
+
+solveBfsNs :: [L.Node] -> [L.Node]
+solveBfsNs = bfsSearch L.succNode L.solved
+
+-- Property 1: It admits only one solution.
+-- The following function count the amount of solutions that a grid has in total,
+-- using a BFS search. The problem of checking this property is that in case it
+-- has many solutions it will take long time to calculate. Trying to optimise
+-- the solution, we will apply take 2 on the search so the lazy evaluation
+-- will only calculate 2 of the solutions and therefore, it will end up faster.
+-- The existence of two solutions is enough to invalidate the property.
+countSolutions :: L.Grid -> Int
+countSolutions gr =  length (take 2 (solveBfsNs (L.initNode gr)))
+
+admitsOneSolution :: L.Grid -> Bool
+admitsOneSolution gr = countSolutions gr == 1
+
+-- Property 2: every other sudoku substracting one value accept more than one solution
+-- To check this property, we need iterate over all the values of a sudoku and change
+-- to 0 one by one. In other words, we generate up to 81 different sudokus from
+-- a given one and check if all of them have more than one solution. In case any of
+-- the generated sudokus have more than one solution, this property is false.
+
+-- The first thing we need to be able to do is to change a value in the grid.
+-- A Grid is just a double list of values ([[Value]]) and we are changing
+-- the value to 0, which is always a correct value. The easiest way to approach
+-- this problem is to create a function that change a value to 0 given the
+-- coordinates.
+-- Partially based in this solution http://stackoverflow.com/a/15530742, we create
+-- the following functions:
+
+-- Given a list and an index, changes the value in the index to 0.
+replaceInCol :: Int -> [L.Value] -> [L.Value]
+replaceInCol 0 row = row
+replaceInCol n row = fst splitCol ++ ((0::L.Value):tail (snd splitCol))
+    where
+        splitCol = splitAt (n-1) row
+
+-- Given a Grid and a pair of coordinates, applies the replaceInCol function to
+-- the selected row.
+replaceInGrid :: (Int,Int) -> L.Grid -> L.Grid
+replaceInGrid (0,_) gr = gr
+replaceInGrid (x,y) gr = fst splitRow ++ (replaceInCol y (head (snd splitRow)):tail (snd splitRow))
+    where
+        splitRow = splitAt (x-1) gr
+
+-- Apply replaceInGrid to every position in the given grid, generating up to 81
+-- different sudokus. In order to reduce the amount of sudokus generate, we
+-- introduce an optimisation of skipping the substitutions that are the same
+-- as the original.
+substitutions :: L.Grid -> [L.Grid]
+substitutions gr = [replaceInGrid (x,y) gr | x <- [1..9], y <- [1..9], replaceInGrid (x,y) gr /= gr]
+
+-- Finally, we only need to check that all the substitutions have more than one
+-- solution. We use the negation of the function admitsOneSolution to take
+-- advantage of the optimisations we did. We also use the combination of all and
+-- the negation because the lazy evalution will stop as soon as it finds a substitution
+-- with 2 solutions.
+subsHaveMoreThanOneSolution :: L.Grid -> Bool
+subsHaveMoreThanOneSolution gr = all (not.admitsOneSolution) (substitutions gr)
+
+-- Finally, we combine both properties in one function. The properties are ordered
+-- based on the computational cost of execution so if it is not minimal, it fails
+-- as soon as possible. Still, it is a rather expensive property to check because
+-- of all the cases that need to be checked.
+isMinimal :: L.Grid -> Bool
+isMinimal gr = admitsOneSolution gr && subsHaveMoreThanOneSolution gr
+
+-- Once defined the property, we will use it to check if the sudokus generated
+-- by the sudoku generator fulfill it. To do this, we are not going to use
+-- QuickCheck for the simple reason that QuickCheck would generate random
+-- sudokus and what we want is to test the generator, not the property.
+
+-- The first thing is to obtain a monadic version of the property. This four
+-- simple lines took much time to discover due to the obscure nature of the monads
+-- (seriosly, it is really hard to find a good documentation about them).
+-- Basically, it just return isMinimal with an output of type IO Bool instead of Bool
+mIsMinimal :: L.Grid -> IO Bool
+mIsMinimal gr = if isMinimal gr
+                then return True
+                else return False
+
+-- Once we have a monadic version of the property, we rewrite the generator function
+-- (Lecture5.main) adding the return of the test. This will generate a minimal sudoku
+-- and test it. We define two versions of the function, one showing the sudokus
+-- generated and other without. The purpose of the second function is to use it
+-- in a test generator like in week-3. The unitary checks can be executed with:
+--  testShowIsMinimal
+-- or
+--  testIsMinimal
+testShowIsMinimal :: IO Bool
+testShowIsMinimal = do [r] <- L.rsolveNs [L.emptyN]
+                       L.showNode r
+                       s  <- L.genProblem r
+                       L.showNode s
+                       mIsMinimal (L.sud2grid(fst s))
+
+testIsMinimal :: IO Bool
+testIsMinimal = do [r] <- L.rsolveNs [L.emptyN]
+                   s  <- L.genProblem r
+                   mIsMinimal (L.sud2grid(fst s))
+
+-- Executes testIsMinimal n times. At the end, it will show the amount of
+-- valid tests executed. Due to the computational time that requires to generate
+-- the sudokus and to test them, be careful with the n chosen. In order to execute
+-- this function:
+--   testEx3 n
+testEx3 :: Int -> IO ()
+testEx3 n = executeTest n n
+    where
+        executeTest x 0 = print (show x ++ " Valid")
+        executeTest x y = do
+                            print ("Executing test number " ++ show y)
+                            t <- testIsMinimal
+                            if t
+                                then executeTest x (y-1)
+                                else error ("Test failed on " ++ show y)
 
 -- Exercise 4
 
