@@ -3,16 +3,11 @@ module Lab5 where
 import Data.List
 import System.CPUTime
 import System.Random
-<<<<<<< HEAD
 import Control.Exception
 import Text.Printf
 import Control.Exception
 import System.CPUTime
-
-
-=======
 import Text.Printf
->>>>>>> ger
 import qualified Lecture5 as L
 import qualified Exercise1 as E1
 import qualified Exercise2 as E2
