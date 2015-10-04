@@ -99,4 +99,6 @@ executable week-5
                         FlexibleInstances
     build-depends: base,
                    random,
-                   QuickCheck
+                   clock,
+                   QuickCheck,
+                   formatting
