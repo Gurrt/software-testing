@@ -1,6 +1,8 @@
 module Lab5 where
 
 import Data.List
+import Data.Char
+import Data.Maybe
 import System.Random
 import Control.Exception
 import System.CPUTime
@@ -316,6 +318,66 @@ testEx3 n = executeTest n n
                                 else error ("Test failed on " ++ show y)
 
 -- Exercise 4
+-- Time: aprox 7 hours (struggling with Haskell).
+
+-- test: exercise4 "eI"
+-- +-------+-------+-------+
+-- |x      |      x|      x|
+-- |   A   |   B   |   C   |
+-- |       |       |       |
+-- +-------+-------+-------+
+-- |       |       |       |
+-- |   D   |   E   |   F   |
+-- |x      |      x|      x|
+-- +-------+-------+-------+
+-- |       |       |       |
+-- |  G    |   H   |   I   |
+-- |x      |     x |      x|
+-- +-------+-------+-------+
+
+delBlockN :: String ->L.Node-> L.Node
+delBlockN nameB node = (s, L.constraints s)
+  where s = delBlockS nameB (fst node)
+
+delBlockS :: String -> L.Sudoku -> L.Sudoku
+delBlockS [] s = s
+delBlockS nameB s = foldl delBlock s (take (length nameB) (findBlockCoordinates nameB))
+
+delBlock :: L.Sudoku -> (L.Row,L.Column) ->  L.Sudoku
+delBlock s (r,c) (x,y) = foldl L.eraseS s (subBlockPosition s (r,c)) (x,y)
+
+subBlockPosition :: L.Sudoku -> E2.Position -> [E2.Position]
+subBlockPosition _ (r, c) = [(r',c') | r' <- L.bl r, c' <- L.bl c]
+
+findBlockCoordinates:: String -> [(L.Row, L.Column)]
+findBlockCoordinates = map (\ x -> findBlk (toUpper (head [x])))
+
+findBlk :: Char -> (L.Row, L.Column)
+findBlk c = fromJust (lookup c [('A',(1,1)), ('B',(1,6)), ('C', (1,9)),('D', (6,1)),('E', (6,6)),('F', (6,9)),('G', (9,1)), ('H', (9,6)),('I',(9,9))])
+
+minimalize :: L.Node -> [(L.Row, L.Column)] -> L.Node
+minimalize n [] = n
+minimalize n ((r,c):rcs) | L.uniqueSol n' = minimalize n' rcs
+                         | otherwise    = minimalize n  rcs
+  where n' = L.eraseN n (r,c)
+
+filledPositions :: L.Sudoku -> [(L.Row, L.Column)]
+filledPositions s = [ (r,c) | r <- L.positions,
+                              c <- L.positions, s (r,c) /= 0 ]
+
+genProblem :: L.Node -> IO L.Node
+genProblem n = do ys <- L.randomize xs
+                  return (minimalize n ys)
+   where xs = filledPositions (fst n)
+
+-- nameB given letter to choose a block nodes
+exercise4 :: String -> IO ()
+exercise4 nameB = do
+                    [r] <- L.rsolveNs [L.emptyN]
+                    L.showNode r
+                    let sBlock = delBlockN nameB r
+                    s  <- genProblem sBlock
+                    L.showNode s
 
 -- Exercise 5
 -- By adding the constraints in the freeAtPos in ex1 the automatic generator automatically takes the new NRC constraint into account
