@@ -1,6 +1,6 @@
 module Lab6 where
 
-import Lecture6
+import qualified Lecture6 as L
 
 -- Exercise 1
 
