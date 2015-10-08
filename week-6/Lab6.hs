@@ -4,9 +4,15 @@ import qualified Lecture6 as L
 
 -- Exercise 1
 
-exM :: Integer -> Integer -> Integer -> Integer
-exM b 1 m = rem (b*1) m
-exM b e m = rem (b* (exM b (e-1) m) ) m
+-- Memory-efficient method
+exMmem :: Integer -> Integer -> Integer -> Integer
+exMmem b 1 m = rem (b*1) m
+exMmem b e m = rem (b* (exMmem b (e-1) m) ) m
+
+-- Squaring (Does not work yet)
+-- exMsq :: Integer -> Integer -> Integer -> Integer
+-- exMsq b e m | odd e = (exMsq b e-1 m) * (rem b m)
+--            | otherwise = exMsq (b*b) e-1 m
 
 -- Exercise 2
 
