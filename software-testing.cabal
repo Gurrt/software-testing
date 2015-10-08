@@ -97,3 +97,13 @@ executable week-5
                         OverloadedStrings
     build-depends: base,
                    random
+
+executable week-5
+    ghc-options: -Wall
+    hs-source-dirs: week-6
+    main-is: Lab6.hs
+    default-language: Haskell2010
+    default-extensions: ExistentialQuantification,
+                        OverloadedStrings
+    build-depends: base,
+                   random
