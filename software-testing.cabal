@@ -98,7 +98,7 @@ executable week-5
     build-depends: base,
                    random
 
-executable week-5
+executable week-6
     ghc-options: -Wall
     hs-source-dirs: week-6
     main-is: Lab6.hs
