@@ -6,13 +6,15 @@ import qualified Lecture6 as L
 
 -- Memory-efficient method
 exMmem :: Integer -> Integer -> Integer -> Integer
-exMmem b 1 m = rem (b*1) m
-exMmem b e m = rem (b* (exMmem b (e-1) m) ) m
+exMmem b 1 m = mod (b*1) m
+exMmem b e m = mod (b* (exMmem b (e-1) m) ) m
 
 -- Squaring (Does not work yet)
--- exMsq :: Integer -> Integer -> Integer -> Integer
--- exMsq b e m | odd e = (exMsq b e-1 m) * (rem b m)
---            | otherwise = exMsq (b*b) e-1 m
+-- Usage: exMsq b e m 1
+exMsq :: Integer -> Integer -> Integer -> Integer -> Integer
+exMsq b 0 m r = r
+exMsq b e m r | odd e = exMsq b (e-1) m (mod (r*b) m)
+exMsq b e m r = exMsq (mod (b*b) m) (div e 2) m r
 
 -- Exercise 2
 
