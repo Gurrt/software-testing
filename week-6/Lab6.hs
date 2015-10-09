@@ -1,5 +1,9 @@
 module Lab6 where
 
+import System.CPUTime
+import Text.Printf
+import Test.QuickCheck
+
 import qualified Lecture6 as L
 
 -- Exercise 1
@@ -17,6 +21,33 @@ exMsq b e m r | odd e = exMsq b (e-1) m (mod (r*b) m)
 exMsq b e m r = exMsq (mod (b*b) m) (div e 2) m r
 
 -- Exercise 2
+-- Does not work yet. Initial setup.
+
+test:: IO()
+test = do
+        let x = getDiffMsq 4 10 497
+        let y = getDiffDefault 4 10 497
+        x y >>= compareDiff
+
+compareDiff:: Double -> Double -> Bool
+compareDiff x y = x < y
+
+getDiffMsq:: Integer -> Integer -> Integer -> IO Double
+getDiffMsq b e m = do
+            start <- getCPUTime
+            let result = exMsq b e m 1
+            end   <- getCPUTime
+            let diff = fromIntegral (end - start) / (10^9)
+            return (diff :: Double)
+
+getDiffDefault:: Integer -> Integer -> Integer -> IO Double
+getDiffDefault b e m = do
+            start <- getCPUTime
+            let result = L.expM b e m
+            end   <- getCPUTime
+            let diff = fromIntegral (end - start) / (10^9)
+            return (diff :: Double)
+
 
 -- Exercise 3
 
