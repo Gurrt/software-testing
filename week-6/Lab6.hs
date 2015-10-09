@@ -9,7 +9,7 @@ exMmem :: Integer -> Integer -> Integer -> Integer
 exMmem b 1 m = mod (b*1) m
 exMmem b e m = mod (b* (exMmem b (e-1) m) ) m
 
--- Squaring (Does not work yet)
+-- Squaring
 -- Usage: exMsq b e m 1
 exMsq :: Integer -> Integer -> Integer -> Integer -> Integer
 exMsq b 0 m r = r
