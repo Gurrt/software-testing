@@ -8,6 +8,13 @@ import qualified Lecture6 as L
 
 -- Exercise 1
 
+-- Catch some edge cases and then use the exMsq to calculate squared modulo
+exM :: Integer -> Integer -> Integer -> Integer
+exM b e m 
+    | e < 0 = 0
+    | e == 0 = 1 `mod` m
+    | otherwise = exMsq b e m 1
+    
 -- Memory-efficient method
 exMmem :: Integer -> Integer -> Integer -> Integer
 exMmem b 1 m = mod (b*1) m
@@ -22,6 +29,7 @@ exMsq b e m r = exMsq (mod (b*b) m) (div e 2) m r
 
 -- Exercise 2
 -- Does not work yet. Initial setup.
+
 
 test:: IO()
 test = do
@@ -47,8 +55,7 @@ getDiffDefault b e m = do
             end   <- getCPUTime
             let diff = fromIntegral (end - start) / (10^9)
             return (diff :: Double)
-
-
+			
 -- Exercise 3
 
 -- Exercise 4
