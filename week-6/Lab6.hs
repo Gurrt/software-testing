@@ -29,8 +29,7 @@ exMsq b e m r = exMsq (mod (b*b) m) (div e 2) m r
 
 -- Exercise 2
 -- Does not work yet. Initial setup.
-
-
+{-
 test:: IO()
 test = do
         let x = getDiffMsq 4 10 497
@@ -55,8 +54,11 @@ getDiffDefault b e m = do
             end   <- getCPUTime
             let diff = fromIntegral (end - start) / (10^9)
             return (diff :: Double)
-			
+-}
 -- Exercise 3
+
+composites :: [Integer]
+composites = 4 : filter (not . L.isPrime) [5..]
 
 -- Exercise 4
 
