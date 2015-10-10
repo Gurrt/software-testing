@@ -72,7 +72,6 @@ composites = 4 : filter (not . L.isPrime) [5..]
     However for low numbers the unique possible samples are quite small, for example for 4 there are only 3 samples.
     Namely : 1^3 mod 4, 2^3 mod 4 and 3^3 mod 4. One of which returns 1, which means that with k = 4 the chance of fooling
     the test is 1/3 ^ 4 == 1.23%.
-    This means that due to the high amount of false positives 4 is probably the easiest number to fool the fermat test with, regardless of the amount of samples.
 -}
 
 foolFermat :: Int -> IO Integer
