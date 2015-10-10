@@ -61,6 +61,27 @@ composites :: [Integer]
 composites = 4 : filter (not . L.isPrime) [5..]
 
 -- Exercise 4
+{-
+	Lowest found values for foolFermat k
+	(k = 1) lowest found: 4
+	(k = 2) lowest found: 4
+	(k = 3) lowest found: 15
+	(k = 4) lowest found: 4
+	
+	If you increase k the probability of fooling the test becomes smaller due to a larger number of random samples,
+	However for low numbers the unique possible samples are quite small, for example for 4 there are only 3 samples.
+	Namely : 1^3 mod 4, 2^3 mod 4 and 3^3 mod 4. One of which returns 1, which means that with k = 4 the chance of fooling
+	the test is 1/3 ^ 4 == 1.23%.
+	This means that due to the high amount of false positives 4 is probably the easiest number to fool the fermat test with, regardless of the amount of samples.
+-}
+
+foolFermat :: Int -> IO Integer
+foolFermat k  = testFermat k composites
+
+testFermat :: Int -> [Integer] -> IO Integer
+testFermat k (x:xs) = do
+    result <- L.prime_tests_F k x
+    if result then return x else testFermat k xs
 
 -- Exercise 5
 
