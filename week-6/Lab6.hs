@@ -4,6 +4,7 @@ import System.CPUTime
 import Text.Printf
 import System.Random
 import Test.QuickCheck
+import Control.Monad
 
 import qualified Lecture6 as L
 
@@ -107,7 +108,7 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
        L.isPrime (6*k+1), 
        L.isPrime (12*k+1), 
        L.isPrime (18*k+1) ]
-	   
+
 testFermat :: Int -> [Integer] -> [IO Bool]
 testFermat k [] = []
 testFermat k (x:xs) = L.prime_tests_F k x : testFermat k xs
@@ -117,5 +118,36 @@ testFermatWithCarmichael n = do
      testFermat 4 (take n carmichael)
 
 -- Exercise 6
+-- Usage: testMrWithCarmicheal numberOfCarmichealComposites
+-- Output: Carmicheal numbers and their passing of the MR primality test.
+
+testMR:: Int -> [Integer] -> [IO Bool]
+testMR k [] = []
+testMR k (x:xs) = L.primeMR  k x : testMR k xs
+
+testMRWithCarmichael :: Int -> IO()
+testMRWithCarmichael n = do
+                           let car = take n carmichael
+                           print ("Carmicheal numbers: " ++ show car)
+                           printIOBoolList (testMR 1 car)
+
+printIOBoolList:: [IO Bool] -> IO()
+printIOBoolList list = do
+                            print "["
+                            printIOBoolListBool list
+                            print "]"
+
+printIOBoolListBool:: [IO Bool] -> IO()
+printIOBoolListBool [x] = do
+                            printIoBool x
+printIOBoolListBool (x:xs) = do printIoBool x
+                                print ","
+                                printIOBoolListBool xs
+
+printIoBool:: IO Bool -> IO()
+printIoBool x = do
+                  y <- x
+                  print y
+
 
 -- Exercise 7
