@@ -147,13 +147,12 @@ testEx5 :: Int -> IO()
 testEx5 k = do
               let num = take k carmichael
               print ("Test for the first " ++ show k ++ " Carmichael's numbers.")
-              print num
-              print ("- Using Fermat's primalty test"::String)
+              print ("Displays the result as a triple following the structure:"::String)
+              print ("- (Carmichael number, (Fermat's test, Sieve of Erastothenes))"::String)
               ferm <- testFermatC k
-              print ferm
-              print ("- Using the sieve of Erastothenes"::String)
               let eras = testIsPrime k
-              print eras
+              let comb = zip num (zip ferm eras)
+              print comb
 
 -- The output of the test deservers to be discussed. The Carmichael's numbers is
 -- derivated from Fermat's primalty test. Fermat's primalty test states that if
