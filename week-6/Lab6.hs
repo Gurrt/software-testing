@@ -130,9 +130,16 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
         isPrime (12*k+1),
         isPrime (18*k+1) ]
 
--- Test the first k Carmichael numbers using the Fermat's primalty test.
+-- Test the first k Carmichael numbers using the Fermat's primalty test. We take
+-- the function prime_test_F from the lectures as our implementation of Fermat's
+-- primalty test.
 testFermatC :: Int -> IO [Bool]
 testFermatC k = mapM prime_test_F (take k carmichael)
+
+-- We also define a test using the Sieve of Erastothenes to check if the output
+-- of the Fermat's test is true.
+testIsPrime :: Int -> [Bool]
+testIsPrime k = map isPrime (take k carmichael)
 
 -- Finally, we output the solution. Carmichael numbers are quite big so the
 -- primalty check takes long time to compute.
@@ -141,9 +148,27 @@ testEx5 k = do
               let num = take k carmichael
               print ("Test for the first " ++ show k ++ " Carmichael's numbers.")
               print num
-              arr <- testFermatC k
-              print arr
+              print ("- Using Fermat's primalty test"::String)
+              ferm <- testFermatC k
+              print ferm
+              print ("- Using the sieve of Erastothenes"::String)
+              let eras = testIsPrime k
+              print eras
 
+-- The output of the test deservers to be discussed. The Carmichael's numbers is
+-- derivated from Fermat's primalty test. Fermat's primalty test states that if
+-- p is prime, then a random number a not divisible by p fulfills
+-- a^(p-1) = 1 mod p. Carmichael numbers are composite numbers (as we can see in
+-- the function used to generate them) that pass Fermat's test but they are not
+-- prime. Indeed, those numbers p are not prime but coprimes with the chosen
+-- base a. This turns Fermat's test into a necessary condition but not sufficient:
+-- If a number is prime, it fulfills Fermat's theorem but if a number fulfills
+-- Fermat's theorem, it may not be prime as Carmichael numbers demostrate.
+
+-- The current formula used to calculate this numbers was proved by J. Chernick
+-- in 1939 and it produces Carmichael numbers as far as his 3 components are
+-- prime numbers. As the number is a Carmichael number, it should pass Fermat's
+-- test but fail on Erastothenes sieve.
 
 -- Exercise 6
 -- Miller-Rabin
