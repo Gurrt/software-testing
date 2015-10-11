@@ -109,18 +109,28 @@ lowestFermatFooler k (x:xs) = do
 
 -- Exercise 5
 
+-- In order to
 carmichael :: [Integer]
 carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
-       k <- [2..],
-       L.isPrime (6*k+1),
-       L.isPrime (12*k+1),
-       L.isPrime (18*k+1) ]
+        k <- [2..],
+        L.isPrime (6*k+1),
+        L.isPrime (12*k+1),
+        L.isPrime (18*k+1) ]
 
-testFermat :: Int -> [Integer] -> [IO Bool]
-testFermat k = map (L.prime_tests_F k)
+-- Test the first k Carmichael numbers using the Fermat's primalty test.
+testFermatC :: Int -> IO [Bool]
+testFermatC k = mapM L.prime_test_F (take k carmichael)
 
-testFermatWithCarmichael :: Int -> [IO Bool]
-testFermatWithCarmichael n = testFermat 4 (take n carmichael)
+-- printTest :: IO Bool -> IO()
+-- printTest b = do
+--                 b' <- b
+--                 if b' then print ("True"::String)
+--                     else print ("False"::String)
+--
+-- testEx5 :: Int -> [IO()]
+-- testEx5 k = do
+--               arr <- testFermatC k
+--               print arr
 
 -- Exercise 6
 
