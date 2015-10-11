@@ -31,6 +31,9 @@ exMmem b e m = mod (b* (exMmem b (e-1) m) ) m
 
 -- Exercise 2
 -- Usage: randomFaster minRange maxRange
+testEx2 :: Integer -> Integer -> IO()
+testEx2 = randomFaster
+
 randomFaster:: Integer -> Integer -> IO()
 randomFaster x y = do
          g <- newStdGen
@@ -43,6 +46,7 @@ randomFaster x y = do
 faster:: Integer -> Integer -> Integer -> IO ()
 faster b e m = do
                     print "Comparison between the Ex1 method and lecture's method"
+                    print "Results are expressed in pico seconds."
                     x <- getDiffMsq b e m
                     y <- getDiffDefault b e m
                     r <- compareDiff x y
@@ -77,18 +81,23 @@ composites :: [Integer]
 composites = 4 : filter (not . L.isPrime) [5..]
 
 -- Exercise 4
-{-
-    Lowest found values for foolFermat k
-    (k = 1) lowest found: 4
-    (k = 2) lowest found: 4
-    (k = 3) lowest found: 15
-    (k = 4) lowest found: 4
-    
-    If you increase k the probability of fooling the test becomes smaller due to a larger number of random samples,
-    However for low numbers the unique possible samples are quite small, for example for 4 there are only 3 samples.
-    Namely : 1^3 mod 4, 2^3 mod 4 and 3^3 mod 4. One of which returns 1, which means that with k = 4 the chance of fooling
-    the test is 1/3 ^ 4 == 1.23%.
--}
+
+-- Lowest found values for foolFermat k
+--   (k = 1) lowest found: 4
+--   (k = 2) lowest found: 4
+--   (k = 3) lowest found: 15
+--   (k = 4) lowest found: 4
+--
+-- If you increase k the probability of fooling the test becomes smaller due to
+-- a larger number of random samples, However for low numbers the unique 
+-- possible samples are quite small, for example for 4 there are only 3 samples.
+-- Namely : 1^3 mod 4, 2^3 mod 4 and 3^3 mod 4. One of which returns 1, which
+-- means that with k = 4 the chance of fooling the test is 1/3 ^ 4 == 1.23%.
+
+testEx4 :: Int -> IO()
+testEx4 k = do
+              f <- foolFermat k
+              print ("(k = " ++ show k ++ ") lowest found: " ++ show f)
 
 foolFermat :: Int -> IO Integer
 foolFermat k  = lowestFermatFooler k composites
