@@ -4,7 +4,7 @@ import System.CPUTime
 import System.Random
 import Control.Monad
 
-import qualified Lecture6 as L
+import Lecture6
 
 -- Exercise 1
 
@@ -68,7 +68,7 @@ getDiffMsq b e m = do
 getDiffDefault:: Integer -> Integer -> Integer -> IO Integer
 getDiffDefault b e m = do
             start <- getCPUTime
-            print ("Lecture method result: " ++ show (L.expM b e m))
+            print ("Lecture method result: " ++ show (expM b e m))
             end   <- getCPUTime
             let diff = fromIntegral (end - start)
             print ("- Execution time: " ++ show diff)
@@ -77,7 +77,7 @@ getDiffDefault b e m = do
 -- Exercise 3
 
 composites :: [Integer]
-composites = 4 : filter (not . L.isPrime) [5..]
+composites = 4 : filter (not . isPrime) [5..]
 
 -- Exercise 4
 
@@ -104,7 +104,7 @@ foolFermat k  = lowestFermatFooler k composites
 lowestFermatFooler :: Int -> [Integer] -> IO Integer
 lowestFermatFooler _ [] = return 0
 lowestFermatFooler k (x:xs) = do
-    result <- L.prime_tests_F k x
+    result <- prime_tests_F k x
     if result then return x else lowestFermatFooler k xs
 
 -- Exercise 5
@@ -113,31 +113,31 @@ lowestFermatFooler k (x:xs) = do
 carmichael :: [Integer]
 carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
         k <- [2..],
-        L.isPrime (6*k+1),
-        L.isPrime (12*k+1),
-        L.isPrime (18*k+1) ]
+        isPrime (6*k+1),
+        isPrime (12*k+1),
+        isPrime (18*k+1) ]
 
 -- Test the first k Carmichael numbers using the Fermat's primalty test.
 testFermatC :: Int -> IO [Bool]
-testFermatC k = mapM L.prime_test_F (take k carmichael)
+testFermatC k = mapM prime_test_F (take k carmichael)
 
--- printTest :: IO Bool -> IO()
--- printTest b = do
---                 b' <- b
---                 if b' then print ("True"::String)
---                     else print ("False"::String)
---
--- testEx5 :: Int -> [IO()]
--- testEx5 k = do
---               arr <- testFermatC k
---               print arr
+printTest :: IO Bool -> IO()
+printTest b = do
+                b' <- b
+                if b' then print ("True"::String)
+                    else print ("False"::String)
+
+testEx5 :: Int -> IO()
+testEx5 k = do
+              arr <- testFermatC k
+              print arr
 
 -- Exercise 6
 
 -- Miller-Rabin
 testMR :: Int -> [Integer] -> IO ()
 testMR k (p:ps) = do
-                      r <- L.primeMR k p
+                      r <- primeMR k p
                       when r $ print(show p ++ ", Miller-Rabin: " ++ show r)
                       testMR k ps
 
@@ -155,7 +155,7 @@ mersnPrimes p = do
                   print(show p)
                   let p1 = (2^p - 1) in
                     do
-                      r <- L.primeMR 5 p1
+                      r <- primeMR 5 p1
                       when r $ mersnPrimes p1
 
 --Test : mersnPrimes 5
