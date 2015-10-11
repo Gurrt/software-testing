@@ -16,22 +16,21 @@ exM b e m
     | e == 0 = 1 `mod` m
     | otherwise = exMsq b e m 1
     
+-- Squaring
+-- Usage: exMsq b e m 1
+exMsq :: Integer -> Integer -> Integer -> Integer -> Integer
+exMsq b 0 m r = r
+exMsq b e m r 
+  | odd e = exMsq b (e-1) m (mod (r*b) m)
+  | otherwise = exMsq (mod (b*b) m) (div e 2) m r
+
 -- Memory-efficient method
 exMmem :: Integer -> Integer -> Integer -> Integer
 exMmem b 1 m = mod (b*1) m
 exMmem b e m = mod (b* (exMmem b (e-1) m) ) m
 
--- Squaring
--- Usage: exMsq b e m 1
-exMsq :: Integer -> Integer -> Integer -> Integer -> Integer
-exMsq b 0 m r = r
-exMsq b e m r | odd e = exMsq b (e-1) m (mod (r*b) m)
-exMsq b e m r = exMsq (mod (b*b) m) (div e 2) m r
-
 -- Exercise 2
 -- Usage: randomFaster minRange maxRange
--- Output: Bool, True = squaring is faster, False = squaring is slower.
-
 randomFaster:: Integer -> Integer -> IO()
 randomFaster x y = do
          g <- newStdGen
@@ -43,31 +42,34 @@ randomFaster x y = do
 
 faster:: Integer -> Integer -> Integer -> IO ()
 faster b e m = do
+                    print "Comparison between the Ex1 method and lecture's method"
                     x <- getDiffMsq b e m
                     y <- getDiffDefault b e m
-                    compareDiff x y
+                    r <- compareDiff x y
+                    if r then print "--> Squaring method is faster"
+                      else print "--> Lecture's method is faster"
 
 -- Difference is in pico seconds
+compareDiff:: Integer -> Integer -> IO Bool
+compareDiff x y = return (x < y)
+
 getDiffMsq:: Integer -> Integer -> Integer -> IO Integer
 getDiffMsq b e m = do
             start <- getCPUTime
-            print (exMsq b e m 1)
+            print ("Square method result: " ++ show (exMsq b e m 1))
             end   <- getCPUTime
             let diff = fromIntegral (end - start)
-            print diff
+            print ("- Execution time: " ++ show diff)
             return diff
 
 getDiffDefault:: Integer -> Integer -> Integer -> IO Integer
 getDiffDefault b e m = do
             start <- getCPUTime
-            print (L.expM b e m)
+            print ("Lecture method result: " ++ show (L.expM b e m))
             end   <- getCPUTime
             let diff = fromIntegral (end - start)
-            print diff
+            print ("- Execution time: " ++ show diff)
             return diff
-
-compareDiff:: Integer -> Integer -> IO ()
-compareDiff x y = print (x < y)
 
 -- Exercise 3
 
