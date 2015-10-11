@@ -2,6 +2,7 @@ module Lab6 where
 
 import System.CPUTime
 import Text.Printf
+import System.Random
 import Test.QuickCheck
 
 import qualified Lecture6 as L
@@ -28,33 +29,46 @@ exMsq b e m r | odd e = exMsq b (e-1) m (mod (r*b) m)
 exMsq b e m r = exMsq (mod (b*b) m) (div e 2) m r
 
 -- Exercise 2
--- Does not work yet. Initial setup.
-{-
-test:: IO()
-test = do
-        let x = getDiffMsq 4 10 497
-        let y = getDiffDefault 4 10 497
-        x y >>= compareDiff
+-- Usage: randomFaster minRange maxRange
+-- Output: Bool, True = squaring is faster, False = squaring is slower.
 
-compareDiff:: Double -> Double -> Bool
-compareDiff x y = x < y
+randomFaster:: Integer -> Integer -> IO()
+randomFaster x y = do
+         g <- newStdGen
+         let (b, newGen) = randomR (x,y) g
+         let (e, newGen') = randomR (x,y) newGen
+         let (m, newgen) = randomR (x,y) newGen'
+         faster b e m
 
-getDiffMsq:: Integer -> Integer -> Integer -> IO Double
+
+faster:: Integer -> Integer -> Integer -> IO ()
+faster b e m = do
+                    x <- getDiffMsq b e m
+                    y <- getDiffDefault b e m
+                    compareDiff x y
+
+-- Difference is in pico seconds
+getDiffMsq:: Integer -> Integer -> Integer -> IO Integer
 getDiffMsq b e m = do
             start <- getCPUTime
-            let result = exMsq b e m 1
+            print (exMsq b e m 1)
             end   <- getCPUTime
-            let diff = fromIntegral (end - start) / (10^9)
-            return (diff :: Double)
+            let diff = fromIntegral (end - start)
+            print diff
+            return diff
 
-getDiffDefault:: Integer -> Integer -> Integer -> IO Double
+getDiffDefault:: Integer -> Integer -> Integer -> IO Integer
 getDiffDefault b e m = do
             start <- getCPUTime
-            let result = L.expM b e m
+            print (L.expM b e m)
             end   <- getCPUTime
-            let diff = fromIntegral (end - start) / (10^9)
-            return (diff :: Double)
--}
+            let diff = fromIntegral (end - start)
+            print diff
+            return diff
+
+compareDiff:: Integer -> Integer -> IO ()
+compareDiff x y = print (x < y)
+
 -- Exercise 3
 
 composites :: [Integer]

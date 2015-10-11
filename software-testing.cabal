@@ -104,6 +104,11 @@ executable week-6
     main-is: Lab6.hs
     default-language: Haskell2010
     default-extensions: ExistentialQuantification,
-                        OverloadedStrings
+                        OverloadedStrings,
+                        ParallelListComp,
+                        TypeSynonymInstances,
+                        FlexibleInstances
     build-depends: base,
-                   random
+                   random,
+                   QuickCheck
+
