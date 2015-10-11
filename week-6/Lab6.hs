@@ -34,24 +34,28 @@ testMR k (p:ps) = do
   testMR k ps
 
 -- Test: testMR 1 carmichael, will take forever
--- Test: testMR 1 100264053529 (true)
--- Alternative: primeMR 1 294409 (False)
+-- Test: testMR 1 (take 1000 carmichael) 118901521 Miller-Rabin:True, and probably many more but my processor fails.
+-- Conclusion: testER uses an iterator int k, and list of Carmichael numbers to test. Our test isn't consistent 
+-- enough to write a solid conclusion, but they are hard to find and this fact make presume that using carmichael 
+-- numbers the MR test is more difficult to fool.
 
--- Mersenne
 
-mersennePrimes :: Integer -> IO ()
-mersennePrimes p = do
+-- Exercise 6 Mersenne
+
+mersnPrimes :: Integer -> IO ()
+mersnPrimes p = do
   print(show p)
   let p1 = (2^p - 1) in
     do
       r <- L.primeMR 5 p1
-      when r $ mersennePrimes p1
+      when r $ mersnPrimes p1
 
---Test : mersennePrimes 2
---Test : mersennePrimes 5
---Test : mersennePrimes m3
--- "31"
--- "2147483647" (= m8: 2^31-1)
+--Test : mersnPrimes 5
+--Test : mersnPrimes m3 "2147483647" (= m8: 2^31-1)
+--Conclusion: mersnPrimes takes a p (prime number) and check in primeMR searching for similarity.  
+--According with https://en.wikipedia.org/wiki/Mersenne_prime not all the numbers has pass the check are genuine Mersenne primes.
+
+
 
 
 -- Exercise 7
