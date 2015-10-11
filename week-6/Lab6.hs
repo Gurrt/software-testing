@@ -7,8 +7,7 @@ import Control.Monad
 import Lecture6
 
 -- Exercise 1
-
--- Catch some edge cases and then use the exMsq to calculate squared modulo
+-- Catches some edge cases and then use the exMsq to calculate squared modulo.
 exM :: Integer -> Integer -> Integer -> Integer
 exM b e m
     | e < 0 = 0
@@ -28,11 +27,13 @@ exMmem :: Integer -> Integer -> Integer -> Integer
 exMmem b 1 m = mod b m
 exMmem b e m = mod (b* exMmem b (e-1) m) m
 
+
 -- Exercise 2
--- Usage: randomFaster minRange maxRange
+-- Usage: testEx2 minRange maxRange
 testEx2 :: Integer -> Integer -> IO()
 testEx2 = randomFaster
 
+-- Generates a random test which compares both methods performance.
 randomFaster:: Integer -> Integer -> IO()
 randomFaster x y = do
          g <- newStdGen
@@ -41,7 +42,8 @@ randomFaster x y = do
          let (m, _) = randomR (x,y) newGen'
          faster b e m
 
-
+-- Given a base, exponent and modulus, it compares the performance of both methods.
+-- Time is in pico seconds.
 faster:: Integer -> Integer -> Integer -> IO ()
 faster b e m = do
                     print ("Comparison between the Ex1 method and lecture's method"::String)
@@ -52,10 +54,10 @@ faster b e m = do
                     if r then print ("--> Squaring method is faster"::String)
                       else print ("--> Lecture's method is faster"::String)
 
--- Difference is in pico seconds
 compareDiff:: Integer -> Integer -> IO Bool
 compareDiff x y = return (x < y)
 
+-- Calculates the execution time using the square method from the exercise 1.
 getDiffMsq:: Integer -> Integer -> Integer -> IO Integer
 getDiffMsq b e m = do
             start <- getCPUTime
@@ -65,6 +67,7 @@ getDiffMsq b e m = do
             print ("- Execution time: " ++ show diff)
             return diff
 
+-- Calculates the execution time using the default method from the lectures.
 getDiffDefault:: Integer -> Integer -> Integer -> IO Integer
 getDiffDefault b e m = do
             start <- getCPUTime
@@ -74,14 +77,20 @@ getDiffDefault b e m = do
             print ("- Execution time: " ++ show diff)
             return diff
 
--- Exercise 3
 
+-- Exercise 3
+-- The approach taken is fairly easy. Starting by the first known not prime number
+-- we generate a list filtering in not being prime using the function isPrime
+-- from the lectures. The function takes long time to compute if a number is
+-- prime, but in case it isn't it gives a result really fast.
 composites :: [Integer]
 composites = 4 : filter (not . isPrime) [5..]
 
--- Exercise 4
 
--- Lowest found values for foolFermat k
+-- Exercise 4
+-- Usage: testEx4 k
+
+-- Lowest found values for textEx k
 --   (k = 1) lowest found: 4
 --   (k = 2) lowest found: 4
 --   (k = 3) lowest found: 15
@@ -107,9 +116,13 @@ lowestFermatFooler k (x:xs) = do
     result <- prime_tests_F k x
     if result then return x else lowestFermatFooler k xs
 
--- Exercise 5
 
--- In order to
+-- Exercise 5
+-- Usage: testEx5 k
+
+-- We are going to test Fermant's primalty test using Carmichael's numbers.
+-- The first thing we do is to define a function to generate Carmichael's numbers.
+-- In this case, it is given in the description of the exercise.
 carmichael :: [Integer]
 carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
         k <- [2..],
@@ -121,19 +134,18 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
 testFermatC :: Int -> IO [Bool]
 testFermatC k = mapM prime_test_F (take k carmichael)
 
-printTest :: IO Bool -> IO()
-printTest b = do
-                b' <- b
-                if b' then print ("True"::String)
-                    else print ("False"::String)
-
+-- Finally, we output the solution. Carmichael numbers are quite big so the
+-- primalty check takes long time to compute.
 testEx5 :: Int -> IO()
 testEx5 k = do
+              let num = take k carmichael
+              print ("Test for the first " ++ show k ++ " Carmichael's numbers.")
+              print num
               arr <- testFermatC k
               print arr
 
--- Exercise 6
 
+-- Exercise 6
 -- Miller-Rabin
 testMR :: Int -> [Integer] -> IO ()
 testMR k (p:ps) = do
